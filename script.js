@@ -495,6 +495,7 @@ const twitterTitle = document.querySelector('meta[name="twitter:title"]');
 const twitterDescription = document.querySelector('meta[name="twitter:description"]');
 const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 let analyticsReady = false;
+let analyticsConsentChoice = null;
 const splitTextKeys = new Set([
   'heroTitle',
   'servicesTitle',
@@ -514,6 +515,16 @@ const deniedGoogleConsent = {
 
 function updateMotionPreference() {
   document.documentElement.classList.toggle('reduce-motion', reduceMotionQuery.matches);
+}
+
+function isDebugMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.has('gtm_debug') || params.get('debug_ga') === '1';
+}
+
+function debugAnalytics(message, data) {
+  if (!isDebugMode()) return;
+  console.info(`[PRIME GA] ${message}`, data || '');
 }
 
 function ensureGoogleTag() {
@@ -553,11 +564,33 @@ function setDefaultGoogleConsent() {
     ...deniedGoogleConsent,
     wait_for_update: 500
   });
+  debugAnalytics('consent default set', deniedGoogleConsent);
 }
 
 function updateGoogleConsent(choice) {
   ensureGoogleTag();
   window.gtag('consent', 'update', getGoogleConsentState(choice));
+  debugAnalytics(`consent ${choice}`, getGoogleConsentState(choice));
+}
+
+function hasAnalyticsConsent() {
+  return analyticsConsentChoice === 'accepted';
+}
+
+function getEventParams(params = {}) {
+  return isDebugMode() ? { ...params, debug_mode: true } : params;
+}
+
+function sendPageView() {
+  if (!GA_MEASUREMENT_ID || typeof window.gtag !== 'function' || !hasAnalyticsConsent()) return;
+
+  const params = getEventParams({
+    page_title: document.title,
+    page_location: window.location.href,
+    page_path: window.location.pathname
+  });
+  window.gtag('event', 'page_view', params);
+  debugAnalytics('page_view sent', params);
 }
 
 function loadGoogleAnalytics() {
@@ -567,6 +600,7 @@ function loadGoogleAnalytics() {
   setDefaultGoogleConsent();
 
   const storedConsent = getStoredCookieConsent();
+  analyticsConsentChoice = storedConsent;
   if (storedConsent) updateGoogleConsent(storedConsent);
 
   if (!document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}"]`)) {
@@ -577,13 +611,19 @@ function loadGoogleAnalytics() {
   }
 
   window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID);
+  window.gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
   analyticsReady = true;
+  debugAnalytics('GA initialized', { measurementId: GA_MEASUREMENT_ID, sendPageView: false });
+  if (hasAnalyticsConsent()) sendPageView();
 }
 
 function trackEvent(name, params = {}) {
-  if (!analyticsReady || typeof window.gtag !== 'function') return;
-  window.gtag('event', name, params);
+  if (!GA_MEASUREMENT_ID || !analyticsReady || typeof window.gtag !== 'function') return;
+  if (!hasAnalyticsConsent()) return;
+
+  const eventParams = getEventParams(params);
+  window.gtag('event', name, eventParams);
+  debugAnalytics(`event sent: ${name}`, eventParams);
 }
 
 function getTrackingPlacement(el) {
@@ -829,8 +869,16 @@ function closeCookieBanner() {
 function saveCookieChoice(choice) {
   const normalizedChoice = choice === 'accepted' ? 'accepted' : 'rejected';
   storeCookieConsent(normalizedChoice);
+  analyticsConsentChoice = normalizedChoice;
   updateGoogleConsent(normalizedChoice);
   closeCookieBanner();
+
+  if (normalizedChoice === 'accepted') {
+    sendPageView();
+    trackEvent('cookie_consent_accept', {
+      consent_choice: 'accepted'
+    });
+  }
 }
 
 function setupCookieConsent() {
