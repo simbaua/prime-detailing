@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 210" role="img" aria-labelledby="title desc">
+  <title id="title">PRIME Detailing logo</title>
+  <desc id="desc">The PRIME Detailing wordmark with a metallic-gold stylized P emblem.</desc>
+  <defs>
+    <linearGradient id="gold" x1="42" y1="30" x2="205" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe6a4"/>
+      <stop offset=".23" stop-color="#d89b38"/>
+      <stop offset=".52" stop-color="#fff0ba"/>
+      <stop offset=".78" stop-color="#b97822"/>
+      <stop offset="1" stop-color="#f3c46f"/>
+    </linearGradient>
+    <linearGradient id="lineGold" x1="260" y1="154" x2="726" y2="154" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7a4a16"/>
+      <stop offset=".45" stop-color="#f2c879"/>
+      <stop offset="1" stop-color="#7a4a16"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(18 22)">
+    <path fill="url(#gold)" d="M40 158 74 34h55c25 0 39 13 39 33 0 27-22 45-55 45H85l-7 24h36l-7 22H40Zm54-73h21c13 0 22-6 22-15 0-6-5-9-14-9h-21l-8 24Z"/>
+    <path fill="#080807" opacity=".62" d="M85 112h28c33 0 55-18 55-45 0 20-14 33-39 33H90l-16 58H40l38-22 7-24Z"/>
+    <path fill="#fff4ca" opacity=".5" d="M102 61h21c9 0 14 3 14 9 0 1.8-.4 3.4-1.1 4.8-1.5-3.8-6-5.8-13.9-5.8H100l2-8Z"/>
+  </g>
+  <g>
+    <text x="248" y="98" fill="#f7f2ea" font-family="Inter, Montserrat, Arial, sans-serif" font-size="66" font-weight="850" letter-spacing="24">PRIME</text>
+    <path fill="url(#lineGold)" d="M250 128h466v2H250z"/>
+    <text x="316" y="166" fill="#d29a45" font-family="Inter, Montserrat, Arial, sans-serif" font-size="22" font-weight="750" letter-spacing="16">DETAILING</text>
+  </g>
+</svg>

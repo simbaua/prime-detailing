@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">PRIME Detailing mark</title>
+  <desc id="desc">A sharp metallic-gold stylized P emblem for PRIME Detailing.</desc>
+  <defs>
+    <linearGradient id="gold" x1="62" y1="46" x2="194" y2="202" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffe6a4"/>
+      <stop offset=".23" stop-color="#d89b38"/>
+      <stop offset=".52" stop-color="#fff0ba"/>
+      <stop offset=".78" stop-color="#b97822"/>
+      <stop offset="1" stop-color="#f3c46f"/>
+    </linearGradient>
+    <linearGradient id="shadow" x1="70" y1="200" x2="172" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4c2c09"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".1"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#shadow)" opacity=".28" d="M75 201 117 55h62c29 0 46 15 46 38 0 30-25 51-62 51h-31l-17 57H75Z"/>
+  <path fill="url(#gold)" d="M77 202 119 54h64c27 0 43 14 43 37 0 31-24 51-62 51h-33l-8 29h42l-9 31H77Zm64-93h25c15 0 25-7 25-17 0-7-6-11-16-11h-25l-9 28Z"/>
+  <path fill="#080807" opacity=".72" d="M131 142h33c38 0 62-20 62-51 0 23-16 37-43 37h-46l-21 74h-39l38-31h8l8-29Z"/>
+  <path fill="#fff6d2" opacity=".55" d="M150 81h25c10 0 16 4 16 11 0 2-.4 4-1.1 5.8-1.7-4.5-7.1-6.8-15.9-6.8h-27l3-10Z"/>
+</svg>
