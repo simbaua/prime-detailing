@@ -1,7 +1,28 @@
 document.documentElement.classList.add('js');
 
+const languageOptions = {
+  nl: { code: 'NL', htmlLang: 'nl', label: 'Nederlands', locale: 'nl_NL' },
+  en: { code: 'EN', htmlLang: 'en', label: 'English', locale: 'en_GB' },
+  ru: { code: 'RU', htmlLang: 'ru', label: 'Русский', locale: 'ru_RU' },
+  uk: { code: 'UA', htmlLang: 'uk', label: 'Українська', locale: 'uk_UA' }
+};
+
+const DEFAULT_LANGUAGE = 'nl';
+const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
+
 const translations = {
   nl: {
+    brandHome: 'PRIME Detailing home',
+    mainNavLabel: 'Hoofdnavigatie',
+    mobileNavLabel: 'Mobiele navigatie',
+    languageSelectLabel: 'Taal kiezen',
+    languageMenuLabel: 'Taal kiezen',
+    factsLabel: 'PRIME Detailing kerninformatie',
+    heroMediaLabel: 'PRIME Detailing premium interieur',
+    heroImageAlt: 'Professioneel gereinigd zwart Audi-interieur door PRIME Detailing',
+    tickerLabel: 'Diensten overzicht',
+    pricingListLabel: 'PRIME Detailing prijzen',
+    contactLineLabel: 'Contactgegevens',
     navServices: 'Diensten',
     navProcess: 'Werkwijze',
     navPricing: 'Prijzen',
@@ -14,7 +35,7 @@ const translations = {
     heroEyebrow: 'MOBIELE AUTO-INTERIEURREINIGING • ZWOLLE & OMGEVING',
     heroSeoTitle: 'Professionele auto-interieurreiniging in Zwolle',
     heroTitle: 'Grondige reiniging.<br><span>Verzorgde afwerking.</span>',
-    heroText: 'PRIME Detailing reinigt auto-interieurs op locatie in Zwolle en omgeving: van snelle refresh tot dieptereiniging van stoelen, tapijt en kunststof.',
+    heroText: 'PRIME Detailing reinigt auto-interieurs op locatie in Zwolle en omgeving: van een snelle refresh tot dieptereiniging van stoelen, tapijt en kunststof.',
     heroCta: 'Boek via WhatsApp',
     heroPrices: 'Bekijk prijzen',
     factService: 'Service',
@@ -26,10 +47,10 @@ const translations = {
     tickerDeep: 'DIEPTEREINIGING',
     tickerMobile: 'MOBIELE SERVICE',
     servicesEyebrow: 'DIENSTEN',
-    servicesTitle: 'Auto-interieur reinigen met het pakket dat past.',
-    servicesText: 'Heldere behandelingen voor mobiele interieur detailing, autobekleding reinigen en dieptereiniging op locatie.',
+    servicesTitle: 'Auto-interieur reinigen met een pakket dat past.',
+    servicesText: 'Heldere behandelingen voor mobiele interieur detailing, bekleding reinigen en dieptereiniging op locatie.',
     refreshDesc: 'Basis auto-interieur refresh: stofzuigen, matten, kunststof, dashboard, panelen en ramen.',
-    interiorDesc: 'Alles uit PRIME Refresh, plus diepere reiniging van stoelen en tapijt met een extractor waar passend.',
+    interiorDesc: 'Alles uit PRIME Refresh, plus diepere reiniging van stoelen en tapijt met een extractor waar dat past.',
     deepDesc: 'Volledige auto-interieurreiniging: stoelen, vloer, matten, kofferbak, kunststof en moeilijk bereikbare plekken.',
     rescueDesc: 'Voor sterk vervuilde auto-interieurs, hardnekkige vlekken en maatwerk.',
     recommended: 'AANBEVOLEN',
@@ -41,12 +62,12 @@ const translations = {
     step1Title: "Foto's sturen",
     step1Text: "Deel interieurfoto's en je locatie via WhatsApp of Instagram.",
     step2Title: 'Advies ontvangen',
-    step2Text: 'Je krijgt een passend pakket, prijsindicatie en afspraakvoorstel.',
+    step2Text: 'Je krijgt een passend pakket, prijsindicatie en voorstel voor een afspraak.',
     step3Title: 'Detailing op locatie',
     step3Text: 'PRIME reinigt het interieur op locatie en levert het netjes op.',
     pricingEyebrow: 'TRANSPARANTE PRIJZEN',
     pricingTitle: 'Prijzen voor auto-interieurreiniging.',
-    pricingIntro: "Kies het pakket dat past bij je interieur. Bij twijfel geven we advies op basis van foto's, vervuiling en type voertuig.",
+    pricingIntro: "Kies het pakket dat past bij je interieur. Bij twijfel adviseren we op basis van foto's, vervuiling en type voertuig.",
     packageCta: 'Kies pakket',
     refreshShort: 'Basis auto-interieur refresh',
     interiorShort: 'Refresh + dieptereiniging van stoelen en tapijt',
@@ -80,10 +101,21 @@ const translations = {
     faq4A: 'Ja. Huisdierharen en extreme vervuiling kunnen een toeslag hebben, afhankelijk van de benodigde tijd.',
     ctaEyebrow: 'KLAAR VOOR EEN FRIS INTERIEUR?',
     ctaTitle: "Stuur foto's van je auto.<br><span>Wij adviseren het juiste pakket.</span>",
-    ctaText: "Stuur interieurfoto's en je locatie. We reageren met een passend pakket en prijsindicatie.",
+    ctaText: "Stuur interieurfoto's en je locatie. We reageren met een passend pakket en een prijsindicatie.",
     footerLine: 'Auto-interieurreiniging • Interieur detailing • Zwolle'
   },
   en: {
+    brandHome: 'PRIME Detailing home',
+    mainNavLabel: 'Main navigation',
+    mobileNavLabel: 'Mobile navigation',
+    languageSelectLabel: 'Choose language',
+    languageMenuLabel: 'Choose language',
+    factsLabel: 'PRIME Detailing key information',
+    heroMediaLabel: 'PRIME Detailing premium interior',
+    heroImageAlt: 'Professionally cleaned black Audi interior by PRIME Detailing',
+    tickerLabel: 'Service overview',
+    pricingListLabel: 'PRIME Detailing prices',
+    contactLineLabel: 'Contact details',
     navServices: 'Services',
     navProcess: 'How it works',
     navPricing: 'Prices',
@@ -96,7 +128,7 @@ const translations = {
     heroEyebrow: 'MOBILE INTERIOR DETAILING • ZWOLLE & SURROUNDING AREA',
     heroSeoTitle: 'Professional mobile car interior cleaning in Zwolle',
     heroTitle: 'Deep cleaning.<br><span>Premium finish.</span>',
-    heroText: 'PRIME Detailing cleans car interiors on location in Zwolle and the surrounding area: from a quick refresh to deep cleaning of seats, carpet and plastics.',
+    heroText: 'PRIME Detailing cleans car interiors at your location in Zwolle and the surrounding area: from a quick refresh to deep cleaning of seats, carpet and plastics.',
     heroCta: 'Book on WhatsApp',
     heroPrices: 'View prices',
     factService: 'Service',
@@ -117,13 +149,13 @@ const translations = {
     recommended: 'RECOMMENDED',
     from199: 'from €199',
     processEyebrow: 'HOW IT WORKS',
-    processTitle: 'Mobile detailing, simply arranged.',
-    processText: 'Send a few clear photos of your car interior and your location in or around Zwolle. Then you receive package advice, a price indication and a suitable time.',
+    processTitle: 'Mobile detailing, made simple.',
+    processText: 'Send a few clear photos of your car interior and your location in or around Zwolle. You will receive package advice, a price estimate and a suitable appointment time.',
     processLink: 'Send photos on WhatsApp',
     step1Title: 'Send photos',
     step1Text: 'Share interior photos and your location via WhatsApp or Instagram.',
     step2Title: 'Receive advice',
-    step2Text: 'You get a suitable package, price indication and appointment proposal.',
+    step2Text: 'You receive a suitable package, price estimate and appointment proposal.',
     step3Title: 'Detailing on location',
     step3Text: 'PRIME cleans the interior on location and leaves it neatly finished.',
     pricingEyebrow: 'TRANSPARENT PRICING',
@@ -162,19 +194,246 @@ const translations = {
     faq4A: 'Yes. Pet hair and extreme dirt may have an extra charge depending on the time required.',
     ctaEyebrow: 'READY FOR A FRESH INTERIOR?',
     ctaTitle: 'Send photos of your car.<br><span>We advise the right package.</span>',
-    ctaText: 'Send interior photos and your location. We reply with the right package and a price indication.',
+    ctaText: 'Send interior photos and your location. We reply with the right package and a price estimate.',
     footerLine: 'Car interior cleaning • Interior detailing • Zwolle'
+  },
+  ru: {
+    brandHome: 'PRIME Detailing главная',
+    mainNavLabel: 'Основная навигация',
+    mobileNavLabel: 'Мобильная навигация',
+    languageSelectLabel: 'Выбрать язык',
+    languageMenuLabel: 'Выбрать язык',
+    factsLabel: 'Ключевая информация PRIME Detailing',
+    heroMediaLabel: 'Премиальный интерьер от PRIME Detailing',
+    heroImageAlt: 'Профессионально очищенный черный интерьер Audi от PRIME Detailing',
+    tickerLabel: 'Обзор услуг',
+    pricingListLabel: 'Цены PRIME Detailing',
+    contactLineLabel: 'Контактные данные',
+    navServices: 'Услуги',
+    navProcess: 'Как это работает',
+    navPricing: 'Цены',
+    navFaq: 'FAQ',
+    navArea: 'Зона выезда',
+    navContact: 'Контакты',
+    navBook: 'WhatsApp',
+    menuOpen: 'Открыть меню',
+    menuClose: 'Закрыть меню',
+    heroEyebrow: 'ВЫЕЗДНОЙ ДЕТЕЙЛИНГ ИНТЕРЬЕРА • ZWOLLE И ОКРЕСТНОСТИ',
+    heroSeoTitle: 'Профессиональная чистка салона автомобиля в Zwolle',
+    heroTitle: 'Глубокая чистка.<br><span>Безупречный результат.</span>',
+    heroText: 'PRIME Detailing чистит салоны с выездом по Zwolle и окрестностям: от легкого обновления до глубокой чистки сидений, ковров и пластика.',
+    heroCta: 'Записаться в WhatsApp',
+    heroPrices: 'Смотреть цены',
+    factService: 'Сервис',
+    factServiceValue: 'С выездом',
+    factArea: 'Регион',
+    factFrom: 'От',
+    heroPriceLabel: 'Пакеты от',
+    tickerDetailing: 'ДЕТЕЙЛИНГ ИНТЕРЬЕРА',
+    tickerDeep: 'ГЛУБОКАЯ ЧИСТКА',
+    tickerMobile: 'ВЫЕЗДНОЙ СЕРВИС',
+    servicesEyebrow: 'УСЛУГИ',
+    servicesTitle: 'Чистка салона под ваши задачи.',
+    servicesText: 'Понятные пакеты для выездного детейлинга интерьера, чистки обивки и глубокой чистки салона.',
+    refreshDesc: 'Базовое освежение салона: пылесос, коврики, пластик, панель, дверные карты и стекла.',
+    interiorDesc: 'Все из PRIME Refresh, плюс более глубокая чистка сидений и коврового покрытия с экстрактором, где это уместно.',
+    deepDesc: 'Полная глубокая чистка салона: сиденья, пол, коврики, багажник, пластик и труднодоступные зоны.',
+    rescueDesc: 'Для сильно загрязненных салонов, стойких пятен и индивидуальных задач.',
+    recommended: 'РЕКОМЕНДУЕМ',
+    from199: 'от €199',
+    processEyebrow: 'КАК ЭТО РАБОТАЕТ',
+    processTitle: 'Выездной детейлинг без лишних сложностей.',
+    processText: 'Отправьте несколько четких фото салона и вашу локацию в Zwolle или рядом. Мы подберем пакет, дадим ориентир по цене и предложим удобное время.',
+    processLink: 'Отправить фото в WhatsApp',
+    step1Title: 'Отправьте фото',
+    step1Text: 'Поделитесь фото салона и локацией через WhatsApp или Instagram.',
+    step2Title: 'Получите рекомендацию',
+    step2Text: 'Мы предложим подходящий пакет, ориентир по цене и время записи.',
+    step3Title: 'Детейлинг на месте',
+    step3Text: 'PRIME очищает салон на вашей локации и передает автомобиль в аккуратном виде.',
+    pricingEyebrow: 'ПРОЗРАЧНЫЕ ЦЕНЫ',
+    pricingTitle: 'Цены на чистку салона автомобиля.',
+    pricingIntro: 'Выберите пакет под состояние салона. Если сомневаетесь, мы подскажем по фото, степени загрязнения и типу автомобиля.',
+    packageCta: 'Выбрать пакет',
+    refreshShort: 'Базовое освежение салона',
+    interiorShort: 'Refresh + глубокая чистка сидений и ковров',
+    deepShort: 'Полная глубокая чистка салона',
+    rescueShort: 'Сильное загрязнение / индивидуально',
+    from199b: 'от €199',
+    extraSuv: 'SUV / 7 мест',
+    extraPet: 'Шерсть животных',
+    extraDirt: 'Сильное загрязнение',
+    customPrice: 'индивидуальная цена',
+    pricingNote: 'Финальная цена может зависеть от типа автомобиля, степени загрязнения и необходимого времени чистки.',
+    whyEyebrow: 'ПОЧЕМУ PRIME',
+    whyTitle: 'Детейлинг, который видно и приятно ощущать.',
+    why1Title: 'Внимание к деталям',
+    why1Text: 'Швы, кромки и труднодоступные зоны также получают аккуратную обработку.',
+    why2Title: 'Выездной сервис',
+    why2Text: 'PRIME приезжает к вам в Zwolle и окрестностях. Меньше ожидания, больше удобства.',
+    why3Title: 'Аккуратный финиш',
+    why3Text: 'Свежий ухоженный салон, в котором снова приятно находиться.',
+    areaEyebrow: 'ЗОНА ОБСЛУЖИВАНИЯ',
+    areaTitle: 'Выездной детейлинг в Zwolle и окрестностях.',
+    areaText: 'PRIME Detailing выполняет выездную чистку салона автомобиля в Zwolle и окрестностях. Живете немного за пределами Zwolle? Отправьте локацию в WhatsApp, и мы сообщим, можем ли приехать.',
+    faqTitle: 'Частые вопросы.',
+    faq1Q: 'Нужно ли предоставить воду или электричество?',
+    faq1A: 'При записи сообщите, что доступно на вашей локации. Мы заранее согласуем, что потребуется для выбранной обработки.',
+    faq2Q: 'Сколько времени занимает чистка салона?',
+    faq2A: 'Это зависит от пакета, автомобиля и степени загрязнения. После фото мы дадим реалистичную оценку времени.',
+    faq3Q: 'Можно ли заранее узнать цену?',
+    faq3A: 'Да. Отправьте четкие фото салона в WhatsApp. При сильном загрязнении мы рассчитаем цену индивидуально.',
+    faq4Q: 'Удаляете ли вы шерсть животных и стойкие пятна?',
+    faq4A: 'Да. Шерсть животных и сильные загрязнения могут требовать доплаты в зависимости от объема работы.',
+    ctaEyebrow: 'ГОТОВЫ К СВЕЖЕМУ САЛОНУ?',
+    ctaTitle: 'Отправьте фото авто.<br><span>Мы подберем пакет.</span>',
+    ctaText: 'Отправьте фото салона и вашу локацию. Мы ответим с подходящим пакетом и ориентиром по цене.',
+    footerLine: 'Чистка салона автомобиля • Детейлинг интерьера • Zwolle'
+  },
+  uk: {
+    brandHome: 'PRIME Detailing головна',
+    mainNavLabel: 'Основна навігація',
+    mobileNavLabel: 'Мобільна навігація',
+    languageSelectLabel: 'Вибрати мову',
+    languageMenuLabel: 'Вибрати мову',
+    factsLabel: 'Ключова інформація PRIME Detailing',
+    heroMediaLabel: 'Преміальний інтер’єр від PRIME Detailing',
+    heroImageAlt: 'Професійно очищений чорний інтер’єр Audi від PRIME Detailing',
+    tickerLabel: 'Огляд послуг',
+    pricingListLabel: 'Ціни PRIME Detailing',
+    contactLineLabel: 'Контактні дані',
+    navServices: 'Послуги',
+    navProcess: 'Як це працює',
+    navPricing: 'Ціни',
+    navFaq: 'FAQ',
+    navArea: 'Зона виїзду',
+    navContact: 'Контакти',
+    navBook: 'WhatsApp',
+    menuOpen: 'Відкрити меню',
+    menuClose: 'Закрити меню',
+    heroEyebrow: 'ВИЇЗНИЙ ДЕТЕЙЛІНГ САЛОНУ • ZWOLLE ТА ОКОЛИЦІ',
+    heroSeoTitle: 'Професійне очищення салону автомобіля в Zwolle',
+    heroTitle: 'Глибоке очищення.<br><span>Бездоганний результат.</span>',
+    heroText: 'PRIME Detailing очищує салони з виїздом у Zwolle та околицях: від швидкого оновлення до глибокого очищення сидінь, килимів і пластику.',
+    heroCta: 'Записатися в WhatsApp',
+    heroPrices: 'Переглянути ціни',
+    factService: 'Сервіс',
+    factServiceValue: 'З виїздом',
+    factArea: 'Регіон',
+    factFrom: 'Від',
+    heroPriceLabel: 'Пакети від',
+    tickerDetailing: 'ДЕТЕЙЛІНГ САЛОНУ',
+    tickerDeep: 'ГЛИБОКЕ ОЧИЩЕННЯ',
+    tickerMobile: 'ВИЇЗНИЙ СЕРВІС',
+    servicesEyebrow: 'ПОСЛУГИ',
+    servicesTitle: 'Очищення салону під ваші потреби.',
+    servicesText: 'Зрозумілі пакети для виїзного детейлінгу салону, очищення оббивки та глибокого очищення.',
+    refreshDesc: 'Базове оновлення салону: пилосос, килимки, пластик, панель, дверні карти та скло.',
+    interiorDesc: 'Усе з PRIME Refresh, плюс глибше очищення сидінь і килимового покриття екстрактором, де це доречно.',
+    deepDesc: 'Повне глибоке очищення салону: сидіння, підлога, килимки, багажник, пластик і важкодоступні місця.',
+    rescueDesc: 'Для сильно забруднених салонів, стійких плям та індивідуальних задач.',
+    recommended: 'РЕКОМЕНДУЄМО',
+    from199: 'від €199',
+    processEyebrow: 'ЯК ЦЕ ПРАЦЮЄ',
+    processTitle: 'Виїзний детейлінг без зайвих складнощів.',
+    processText: 'Надішліть кілька чітких фото салону та вашу локацію в Zwolle або поблизу. Ми підберемо пакет, дамо орієнтовну ціну та запропонуємо зручний час.',
+    processLink: 'Надіслати фото в WhatsApp',
+    step1Title: 'Надішліть фото',
+    step1Text: 'Поділіться фото салону та локацією через WhatsApp або Instagram.',
+    step2Title: 'Отримайте рекомендацію',
+    step2Text: 'Ми запропонуємо відповідний пакет, орієнтовну ціну та час запису.',
+    step3Title: 'Детейлінг на місці',
+    step3Text: 'PRIME очищує салон на вашій локації та передає авто в охайному вигляді.',
+    pricingEyebrow: 'ПРОЗОРІ ЦІНИ',
+    pricingTitle: 'Ціни на очищення салону автомобіля.',
+    pricingIntro: 'Оберіть пакет під стан салону. Якщо сумніваєтеся, ми порадимо за фото, рівнем забруднення та типом автомобіля.',
+    packageCta: 'Обрати пакет',
+    refreshShort: 'Базове оновлення салону',
+    interiorShort: 'Refresh + глибоке очищення сидінь і килимів',
+    deepShort: 'Повне глибоке очищення салону',
+    rescueShort: 'Сильне забруднення / індивідуально',
+    from199b: 'від €199',
+    extraSuv: 'SUV / 7 місць',
+    extraPet: 'Шерсть тварин',
+    extraDirt: 'Сильне забруднення',
+    customPrice: 'індивідуальна ціна',
+    pricingNote: 'Фінальна ціна може залежати від типу автомобіля, рівня забруднення та необхідного часу очищення.',
+    whyEyebrow: 'ЧОМУ PRIME',
+    whyTitle: 'Детейлінг, який видно і приємно відчувати.',
+    why1Title: 'Увага до деталей',
+    why1Text: 'Шви, краї та важкодоступні зони також отримують ретельний догляд.',
+    why2Title: 'Виїзний сервіс',
+    why2Text: 'PRIME приїжджає до вас у Zwolle та околицях. Менше очікування, більше зручності.',
+    why3Title: 'Доглянутий фініш',
+    why3Text: 'Свіжий охайний салон, у якому знову приємно перебувати.',
+    areaEyebrow: 'ЗОНА ОБСЛУГОВУВАННЯ',
+    areaTitle: 'Виїзний детейлінг у Zwolle та околицях.',
+    areaText: 'PRIME Detailing виконує виїзне очищення салону автомобіля у Zwolle та околицях. Живете трохи за межами Zwolle? Надішліть локацію в WhatsApp, і ми повідомимо, чи можемо приїхати.',
+    faqTitle: 'Поширені запитання.',
+    faq1Q: 'Чи потрібно надати воду або електрику?',
+    faq1A: 'Під час запису повідомте, що доступно на вашій локації. Ми заздалегідь узгодимо, що потрібно для обраної обробки.',
+    faq2Q: 'Скільки часу займає очищення салону?',
+    faq2A: 'Це залежить від пакета, автомобіля та рівня забруднення. Після фото ми дамо реалістичну оцінку часу.',
+    faq3Q: 'Чи можна дізнатися ціну заздалегідь?',
+    faq3A: 'Так. Надішліть чіткі фото салону в WhatsApp. Для сильного забруднення ми розрахуємо ціну індивідуально.',
+    faq4Q: 'Чи видаляєте ви шерсть тварин і стійкі плями?',
+    faq4A: 'Так. Шерсть тварин і сильні забруднення можуть потребувати доплати залежно від обсягу роботи.',
+    ctaEyebrow: 'ГОТОВІ ДО СВІЖОГО САЛОНУ?',
+    ctaTitle: 'Надішліть фото авто.<br><span>Ми підберемо пакет.</span>',
+    ctaText: 'Надішліть фото салону та вашу локацію. Ми відповімо з відповідним пакетом і орієнтовною ціною.',
+    footerLine: 'Очищення салону автомобіля • Детейлінг салону • Zwolle'
   }
 };
 
 const whatsappMessages = {
-  nl: "Hoi PRIME, ik wil graag een prijsindicatie voor mijn auto-interieur. Ik stuur foto's en mijn locatie mee.",
-  en: 'Hi PRIME, I would like a quote for my car interior. I can send photos and my location.'
+  nl: {
+    base: "Hoi PRIME, ik wil graag een prijsindicatie voor mijn auto-interieur. Ik kan foto's van de auto en mijn locatie sturen.",
+    packageInterest: 'Ik denk aan'
+  },
+  en: {
+    base: 'Hi PRIME, I would like a quote for my car interior. I can send photos of the car and my location.',
+    packageInterest: 'I am interested in'
+  },
+  ru: {
+    base: 'Здравствуйте! Хочу записаться на детейлинг салона. Могу отправить фото автомобиля и свою локацию.',
+    packageInterest: 'Меня интересует пакет'
+  },
+  uk: {
+    base: 'Вітаю! Хочу записатися на детейлінг салону. Можу надіслати фото автомобіля та свою локацію.',
+    packageInterest: 'Мене цікавить пакет'
+  }
+};
+
+const metadata = {
+  nl: {
+    title: 'Auto Interieur Reinigen Zwolle | PRIME Detailing',
+    description: 'Professionele auto-interieurreiniging in Zwolle op locatie. Van snelle refresh tot dieptereiniging. Pakketten vanaf €69. Vraag direct een prijs aan.',
+    socialDescription: 'Mobiele interieur detailing en dieptereiniging in Zwolle. Pakketten vanaf €69. Vraag direct een prijs aan via WhatsApp.'
+  },
+  en: {
+    title: 'Car Interior Cleaning Zwolle | PRIME Detailing',
+    description: 'Professional mobile car interior cleaning in Zwolle. From quick refresh to deep cleaning. Packages from €69. Request a price on WhatsApp.',
+    socialDescription: 'Mobile interior detailing and deep cleaning in Zwolle. Packages from €69. Request a price on WhatsApp.'
+  },
+  ru: {
+    title: 'Чистка салона автомобиля Zwolle | PRIME Detailing',
+    description: 'Профессиональная выездная чистка салона автомобиля в Zwolle. От быстрой уборки до глубокой чистки. Пакеты от €69. Запросите цену в WhatsApp.',
+    socialDescription: 'Выездной детейлинг интерьера и глубокая чистка салона в Zwolle. Пакеты от €69. Запросите цену в WhatsApp.'
+  },
+  uk: {
+    title: 'Очищення салону автомобіля Zwolle | PRIME Detailing',
+    description: 'Професійне виїзне очищення салону автомобіля в Zwolle. Від швидкого оновлення до глибокого очищення. Пакети від €69. Запитайте ціну в WhatsApp.',
+    socialDescription: 'Виїзний детейлінг салону та глибоке очищення в Zwolle. Пакети від €69. Запитайте ціну в WhatsApp.'
+  }
 };
 
 const WA_BASE = 'https://wa.me/31625105116';
-let language = 'nl';
-const langToggle = document.getElementById('langToggle');
+let language = DEFAULT_LANGUAGE;
+const langSelector = document.getElementById('langSelector');
+const langButton = document.getElementById('langButton');
+const langButtonCode = document.getElementById('langButtonCode');
+const langMenu = document.getElementById('langMenu');
+const langOptions = Array.from(document.querySelectorAll('.lang-option'));
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
@@ -215,9 +474,66 @@ function prepareTextReveals() {
   });
 }
 
+function getStoredLanguage() {
+  try {
+    const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return languageOptions[stored] ? stored : DEFAULT_LANGUAGE;
+  } catch (error) {
+    return DEFAULT_LANGUAGE;
+  }
+}
+
+function storeLanguage(lang) {
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+  } catch (error) {
+    // Storage can be unavailable in private or restricted browser contexts.
+  }
+}
+
+function updateLanguageSelector() {
+  if (!langButton || !langButtonCode) return;
+
+  langButtonCode.textContent = languageOptions[language].code;
+  langOptions.forEach((option) => {
+    const isActive = option.dataset.lang === language;
+    option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    option.classList.toggle('is-active', isActive);
+  });
+}
+
+function closeLanguageMenu({ restoreFocus = false } = {}) {
+  if (!langButton || !langMenu) return;
+
+  langMenu.hidden = true;
+  langButton.setAttribute('aria-expanded', 'false');
+  if (restoreFocus) langButton.focus();
+}
+
+function openLanguageMenu({ focusActive = false } = {}) {
+  if (!langButton || !langMenu) return;
+
+  langMenu.hidden = false;
+  langButton.setAttribute('aria-expanded', 'true');
+
+  if (focusActive) {
+    const activeOption = langOptions.find((option) => option.dataset.lang === language) || langOptions[0];
+    activeOption.focus();
+  }
+}
+
+function toggleLanguageMenu() {
+  if (!langButton || !langMenu) return;
+  if (langMenu.hidden) openLanguageMenu();
+  else closeLanguageMenu();
+}
+
 function applyLanguage(lang) {
+  if (!languageOptions[lang]) lang = DEFAULT_LANGUAGE;
+
   language = lang;
-  document.documentElement.lang = lang;
+  document.documentElement.lang = languageOptions[lang].htmlLang;
+  document.documentElement.dataset.language = languageOptions[lang].code.toLowerCase();
 
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n;
@@ -233,47 +549,111 @@ function applyLanguage(lang) {
     }
   });
 
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => {
+    const key = el.dataset.i18nAlt;
+    if (translations[lang][key]) {
+      el.setAttribute('alt', translations[lang][key]);
+    }
+  });
+
   document.querySelectorAll('.wa-link').forEach((link) => {
     const packageName = link.dataset.package;
+    const whatsappCopy = whatsappMessages[lang];
     const message = packageName
-      ? `${whatsappMessages[lang]} ${lang === 'nl' ? 'Ik denk aan' : 'I am interested in'} ${packageName}.`
-      : whatsappMessages[lang];
+      ? `${whatsappCopy.base} ${whatsappCopy.packageInterest} ${packageName}.`
+      : whatsappCopy.base;
     link.href = `${WA_BASE}?text=${encodeURIComponent(message)}`;
   });
 
-  langToggle.textContent = lang === 'nl' ? 'EN' : 'NL';
-  langToggle.setAttribute('aria-label', lang === 'nl' ? 'Switch language to English' : 'Wissel taal naar Nederlands');
-  langToggle.setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
-  const pageTitle = lang === 'nl'
-    ? 'Auto Interieur Reinigen Zwolle | PRIME Detailing'
-    : 'Car Interior Cleaning Zwolle | PRIME Detailing';
-  const pageDescription = lang === 'nl'
-    ? 'Professionele auto-interieurreiniging in Zwolle op locatie. Van snelle refresh tot dieptereiniging. Pakketten vanaf €69. Vraag direct een prijs aan.'
-    : 'Professional mobile car interior cleaning in Zwolle. From quick refresh to deep cleaning. Packages from €69. Request a price on WhatsApp.';
-  const socialDescription = lang === 'nl'
-    ? 'Mobiele interieur detailing en dieptereiniging in Zwolle. Pakketten vanaf €69. Vraag direct een prijs aan via WhatsApp.'
-    : 'Mobile interior detailing and deep cleaning in Zwolle. Packages from €69. Request a price on WhatsApp.';
+  const pageMeta = metadata[lang];
 
-  document.title = pageTitle;
+  document.title = pageMeta.title;
 
   if (metaDescription) {
-    metaDescription.content = pageDescription;
+    metaDescription.content = pageMeta.description;
   }
-  if (ogTitle) ogTitle.content = pageTitle;
-  if (ogDescription) ogDescription.content = socialDescription;
-  if (ogLocale) ogLocale.content = lang === 'nl' ? 'nl_NL' : 'en_GB';
-  if (twitterTitle) twitterTitle.content = pageTitle;
-  if (twitterDescription) twitterDescription.content = socialDescription;
+  if (ogTitle) ogTitle.content = pageMeta.title;
+  if (ogDescription) ogDescription.content = pageMeta.socialDescription;
+  if (ogLocale) ogLocale.content = languageOptions[lang].locale;
+  if (twitterTitle) twitterTitle.content = pageMeta.title;
+  if (twitterDescription) twitterDescription.content = pageMeta.socialDescription;
 
   prepareTextReveals();
   updateMobileMenuLabel();
+  updateLanguageSelector();
+  storeLanguage(lang);
 }
 
-langToggle.addEventListener('click', () => applyLanguage(language === 'nl' ? 'en' : 'nl'));
+function setupLanguageSelector() {
+  if (!langSelector || !langButton || !langMenu || !langOptions.length) return;
+
+  langButton.addEventListener('click', toggleLanguageMenu);
+  langButton.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openLanguageMenu({ focusActive: true });
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      langMenu.hidden = false;
+      langButton.setAttribute('aria-expanded', 'true');
+      langOptions[langOptions.length - 1].focus();
+    }
+  });
+
+  langOptions.forEach((option, index) => {
+    option.addEventListener('click', () => {
+      applyLanguage(option.dataset.lang);
+      closeLanguageMenu({ restoreFocus: true });
+    });
+
+    option.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeLanguageMenu({ restoreFocus: true });
+        return;
+      }
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const offset = event.key === 'ArrowDown' ? 1 : -1;
+        const nextIndex = (index + offset + langOptions.length) % langOptions.length;
+        langOptions[nextIndex].focus();
+        return;
+      }
+
+      if (event.key === 'Home') {
+        event.preventDefault();
+        langOptions[0].focus();
+        return;
+      }
+
+      if (event.key === 'End') {
+        event.preventDefault();
+        langOptions[langOptions.length - 1].focus();
+        return;
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        applyLanguage(option.dataset.lang);
+        closeLanguageMenu({ restoreFocus: true });
+      }
+    });
+  });
+
+  document.addEventListener('pointerdown', (event) => {
+    if (!langSelector.contains(event.target)) closeLanguageMenu();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeLanguageMenu();
+  });
+}
 
 document.getElementById('year').textContent = new Date().getFullYear();
 updateMotionPreference();
-applyLanguage('nl');
+setupLanguageSelector();
+applyLanguage(getStoredLanguage());
 
 if (reduceMotionQuery.addEventListener) {
   reduceMotionQuery.addEventListener('change', updateMotionPreference);

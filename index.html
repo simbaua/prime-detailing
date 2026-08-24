@@ -172,17 +172,28 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="PRIME Detailing home">
+    <a class="brand" href="#top" aria-label="PRIME Detailing home" data-i18n-aria="brandHome">
       <img src="assets/prime-logo-full.svg" alt="PRIME Detailing logo" width="760" height="210" />
     </a>
-    <nav class="desktop-nav" aria-label="Hoofdnavigatie">
+    <nav class="desktop-nav" aria-label="Hoofdnavigatie" data-i18n-aria="mainNavLabel">
       <a href="#diensten" data-i18n="navServices">Diensten</a>
       <a href="#werkwijze" data-i18n="navProcess">Werkwijze</a>
       <a href="#prijzen" data-i18n="navPricing">Prijzen</a>
       <a href="#faq" data-i18n="navFaq">FAQ</a>
     </nav>
     <div class="header-actions">
-      <button class="lang-toggle" id="langToggle" type="button" aria-label="Switch language" aria-pressed="false">EN</button>
+      <div class="lang-selector" id="langSelector">
+        <button class="lang-button" id="langButton" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="langMenu" aria-label="Taal kiezen" data-i18n-aria="languageSelectLabel">
+          <span id="langButtonCode">NL</span>
+          <span class="lang-chevron" aria-hidden="true"></span>
+        </button>
+        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Taal kiezen" data-i18n-aria="languageMenuLabel" hidden>
+          <button class="lang-option" type="button" role="option" data-lang="nl" aria-selected="true">Nederlands</button>
+          <button class="lang-option" type="button" role="option" data-lang="en" aria-selected="false">English</button>
+          <button class="lang-option" type="button" role="option" data-lang="ru" aria-selected="false">Русский</button>
+          <button class="lang-option" type="button" role="option" data-lang="uk" aria-selected="false">Українська</button>
+        </div>
+      </div>
       <a class="button button-small wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" data-i18n="navBook">WhatsApp</a>
       <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-controls="mobileMenu" aria-expanded="false" data-i18n-aria="menuOpen" aria-label="Menu openen">
         <span></span>
@@ -190,7 +201,7 @@
       </button>
     </div>
     <div class="mobile-nav-backdrop" id="mobileNavBackdrop" hidden></div>
-    <nav class="mobile-nav" id="mobileMenu" aria-label="Mobiele navigatie" hidden>
+    <nav class="mobile-nav" id="mobileMenu" aria-label="Mobiele navigatie" data-i18n-aria="mobileNavLabel" hidden>
       <a href="#diensten" data-i18n="navServices">Diensten</a>
       <a href="#werkwijze" data-i18n="navProcess">Werkwijze</a>
       <a href="#prijzen" data-i18n="navPricing">Prijzen</a>
@@ -212,15 +223,15 @@
           <a class="button wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" data-i18n="heroCta">Boek via WhatsApp</a>
           <a class="button button-ghost" href="#prijzen" data-i18n="heroPrices">Bekijk prijzen</a>
         </div>
-        <dl class="fact-strip" aria-label="PRIME Detailing kerninformatie">
+        <dl class="fact-strip" aria-label="PRIME Detailing kerninformatie" data-i18n-aria="factsLabel">
           <div><dt data-i18n="factService">Service</dt><dd data-i18n="factServiceValue">Op locatie</dd></div>
           <div><dt data-i18n="factArea">Regio</dt><dd>Zwolle</dd></div>
           <div><dt data-i18n="factFrom">Vanaf</dt><dd>€69</dd></div>
         </dl>
       </div>
 
-      <div class="hero-media reveal" aria-label="PRIME Detailing premium interieur">
-        <img src="assets/prime-auto-interieur-reinigen-zwolle.webp" alt="Professioneel gereinigd zwart Audi-interieur door PRIME Detailing" width="1536" height="1024" loading="eager" fetchpriority="high" decoding="async" />
+      <div class="hero-media reveal" aria-label="PRIME Detailing premium interieur" data-i18n-aria="heroMediaLabel">
+        <img src="assets/prime-auto-interieur-reinigen-zwolle.webp" alt="Professioneel gereinigd zwart Audi-interieur door PRIME Detailing" data-i18n-alt="heroImageAlt" width="1536" height="1024" loading="eager" fetchpriority="high" decoding="async" />
         <div class="hero-price">
           <span data-i18n="heroPriceLabel">Pakketten vanaf</span>
           <strong>€69</strong>
@@ -228,7 +239,7 @@
       </div>
     </section>
 
-    <section class="ticker" aria-label="Diensten overzicht">
+    <section class="ticker" aria-label="Diensten overzicht" data-i18n-aria="tickerLabel">
       <div class="ticker-track">
         <span data-i18n="tickerDetailing">INTERIEUR DETAILING</span>
         <i aria-hidden="true"></i>
@@ -245,6 +256,7 @@
         <span class="ticker-clone" data-i18n="tickerMobile" aria-hidden="true">MOBIELE SERVICE</span>
         <i class="ticker-clone" aria-hidden="true"></i>
         <span class="ticker-clone" aria-hidden="true">ZWOLLE</span>
+        <i class="ticker-clone" aria-hidden="true"></i>
       </div>
     </section>
 
@@ -307,7 +319,7 @@
         <h2 data-i18n="pricingTitle">Prijzen voor auto-interieurreiniging.</h2>
         <p data-i18n="pricingIntro">Kies het pakket dat past bij je interieur. Bij twijfel geven we advies op basis van foto's, vervuiling en type voertuig.</p>
       </div>
-      <ul class="pricing-shell reveal" aria-label="PRIME Detailing prijzen">
+      <ul class="pricing-shell reveal" aria-label="PRIME Detailing prijzen" data-i18n-aria="pricingListLabel">
         <li class="price-row"><div><strong>PRIME REFRESH</strong><span data-i18n="refreshShort">Basis auto-interieur refresh</span><a class="package-link wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" data-package="PRIME REFRESH" data-i18n="packageCta">Kies pakket</a></div><b>€69</b></li>
         <li class="price-row"><div><strong>PRIME INTERIOR</strong><span data-i18n="interiorShort">Refresh + dieptereiniging van stoelen en tapijt</span><a class="package-link wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" data-package="PRIME INTERIOR" data-i18n="packageCta">Kies pakket</a></div><b>€119</b></li>
         <li class="price-row"><div><strong>PRIME DEEP CLEAN</strong><span data-i18n="deepShort">Volledige interieur dieptereiniging</span><a class="package-link wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" data-package="PRIME DEEP CLEAN" data-i18n="packageCta">Kies pakket</a></div><b>€159</b></li>
@@ -369,7 +381,7 @@
         <a class="button wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener">WhatsApp</a>
         <a class="button button-ghost" href="https://www.instagram.com/prime.detail.nl/" target="_blank" rel="noopener">Instagram</a>
       </div>
-      <div class="contact-line reveal" aria-label="Contactgegevens">
+      <div class="contact-line reveal" aria-label="Contactgegevens" data-i18n-aria="contactLineLabel">
         <a href="tel:+31625105116">+31 6 25 10 51 16</a>
         <span aria-hidden="true"></span>
         <a href="mailto:primedetailing.nl@gmail.com">primedetailing.nl@gmail.com</a>
@@ -385,7 +397,7 @@
     <p>© <span id="year"></span> PRIME Detailing</p>
   </footer>
 
-  <a class="floating-whatsapp wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" aria-label="Boek via WhatsApp">WhatsApp</a>
+  <a class="floating-whatsapp wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" aria-label="Boek via WhatsApp" data-i18n-aria="heroCta">WhatsApp</a>
   <script src="script.js"></script>
 </body>
 </html>

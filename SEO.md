@@ -72,8 +72,9 @@ Logo files remain unchanged:
 Current architecture:
 
 - Dutch default content at `/`
-- English content is loaded on the same URL through JavaScript
-- `<html lang="nl">` is correct on initial render and switches to `en` when the toggle is used
+- English, Russian and Ukrainian content load on the same URL through JavaScript
+- `<html lang="nl">` is correct on initial render and switches to `en`, `ru` or `uk` when the selector is used
+- The selector uses `UA` as the visible Ukrainian code, but the HTML language code correctly remains `uk`
 
 Recommendation:
 
@@ -81,8 +82,10 @@ For stronger indexability after launch, publish crawlable language URLs:
 
 - Dutch: `/`
 - English: `/en/`
+- Russian: `/ru/`
+- Ukrainian: `/uk/`
 
-Then add real `hreflang` tags using the production domain. Do not add fake hreflang URLs while both languages share one URL.
+Then add real `hreflang` tags using the production domain. Do not add fake hreflang URLs while all languages share one URL.
 
 ## Domain Placeholders
 
@@ -97,7 +100,7 @@ When the final domain is known:
 - Replace `PRODUCTION_DOMAIN_REQUIRED` in `sitemap.template.xml`
 - Rename or copy the template to `sitemap.xml`
 - Uncomment and update the `Sitemap:` line in `robots.txt`
-- Add crawlable `/en/` and hreflang tags if English SEO matters
+- Add crawlable `/en/`, `/ru/`, `/uk/` and hreflang tags if non-Dutch SEO matters
 
 ## Robots Setup
 
