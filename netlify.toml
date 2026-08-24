@@ -1,6 +1,18 @@
 [build]
   publish = "."
 
+[[redirects]]
+  from = "https://www.prime-detail.nl/*"
+  to = "https://prime-detail.nl/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.prime-detail.nl/*"
+  to = "https://prime-detail.nl/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]

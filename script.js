@@ -9,6 +9,7 @@ const languageOptions = {
 
 const DEFAULT_LANGUAGE = 'nl';
 const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
+const GA_MEASUREMENT_ID = "G-OY96HZLQE2";
 
 const translations = {
   nl: {
@@ -407,8 +408,8 @@ const whatsappMessages = {
 const metadata = {
   nl: {
     title: 'Auto Interieur Reinigen Zwolle | PRIME Detailing',
-    description: 'Professionele auto-interieurreiniging in Zwolle op locatie. Van snelle refresh tot dieptereiniging. Pakketten vanaf €69. Vraag direct een prijs aan.',
-    socialDescription: 'Mobiele interieur detailing en dieptereiniging in Zwolle. Pakketten vanaf €69. Vraag direct een prijs aan via WhatsApp.'
+    description: 'Professionele auto-interieurreiniging in Zwolle op locatie. Mobiele service van refresh tot dieptereiniging vanaf €69. Vraag prijs via WhatsApp.',
+    socialDescription: 'Mobiele auto-interieurreiniging en interieur detailing in Zwolle. Pakketten vanaf €69. Vraag direct een prijs aan via WhatsApp.'
   },
   en: {
     title: 'Car Interior Cleaning Zwolle | PRIME Detailing',
@@ -444,6 +445,7 @@ const ogLocale = document.querySelector('meta[property="og:locale"]');
 const twitterTitle = document.querySelector('meta[name="twitter:title"]');
 const twitterDescription = document.querySelector('meta[name="twitter:description"]');
 const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+let analyticsReady = false;
 const splitTextKeys = new Set([
   'heroTitle',
   'servicesTitle',
@@ -457,6 +459,42 @@ const splitTextKeys = new Set([
 
 function updateMotionPreference() {
   document.documentElement.classList.toggle('reduce-motion', reduceMotionQuery.matches);
+}
+
+function loadGoogleAnalytics() {
+  if (!GA_MEASUREMENT_ID) return;
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() {
+    window.dataLayer.push(arguments);
+  };
+
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+  document.head.appendChild(script);
+
+  window.gtag('js', new Date());
+  window.gtag('config', GA_MEASUREMENT_ID);
+  analyticsReady = true;
+}
+
+function trackEvent(name, params = {}) {
+  if (!analyticsReady || typeof window.gtag !== 'function') return;
+  window.gtag('event', name, params);
+}
+
+function getTrackingPlacement(el) {
+  if (el.dataset.trackPlacement) return el.dataset.trackPlacement;
+  if (el.classList.contains('floating-whatsapp')) return 'floating';
+  if (el.closest('#prijzen')) return 'pricing';
+  if (el.closest('#contact')) return 'final_cta';
+  if (el.closest('#werkwijze')) return 'process';
+  if (el.closest('#diensten')) return 'services';
+  if (el.closest('.mobile-nav')) return 'mobile_nav';
+  if (el.closest('.site-header')) return 'header';
+  if (el.closest('.hero')) return 'hero';
+  return 'unknown';
 }
 
 function prepareTextReveals() {
@@ -531,6 +569,8 @@ function toggleLanguageMenu() {
 function applyLanguage(lang) {
   if (!languageOptions[lang]) lang = DEFAULT_LANGUAGE;
 
+  const previousLanguage = language;
+  const shouldTrackLanguageChange = document.documentElement.dataset.languageInitialized === 'true' && previousLanguage !== lang;
   language = lang;
   document.documentElement.lang = languageOptions[lang].htmlLang;
   document.documentElement.dataset.language = languageOptions[lang].code.toLowerCase();
@@ -582,6 +622,14 @@ function applyLanguage(lang) {
   updateMobileMenuLabel();
   updateLanguageSelector();
   storeLanguage(lang);
+  document.documentElement.dataset.languageInitialized = 'true';
+
+  if (shouldTrackLanguageChange) {
+    trackEvent('language_change', {
+      from_language: languageOptions[previousLanguage].code,
+      to_language: languageOptions[lang].code
+    });
+  }
 }
 
 function setupLanguageSelector() {
@@ -902,6 +950,59 @@ function setupMagneticDetails() {
   });
 }
 
+function setupTrackingEvents() {
+  document.querySelectorAll('.wa-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      const params = { placement: getTrackingPlacement(link) };
+      if (link.dataset.package) params.package = link.dataset.package;
+
+      trackEvent('whatsapp_click', params);
+      if (link.dataset.package) trackEvent('package_select', params);
+    });
+  });
+
+  document.querySelectorAll('a[href*="instagram.com"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('instagram_click', { placement: getTrackingPlacement(link) });
+    });
+  });
+
+  document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('phone_click', { placement: getTrackingPlacement(link) });
+    });
+  });
+
+  document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      trackEvent('email_click', { placement: getTrackingPlacement(link) });
+    });
+  });
+
+  document.querySelectorAll('.faq-list details').forEach((detail) => {
+    detail.addEventListener('toggle', () => {
+      if (!detail.open) return;
+      trackEvent('faq_open', {
+        question: detail.querySelector('summary')?.innerText.trim() || 'unknown'
+      });
+    });
+  });
+
+  const pricingSection = document.getElementById('prijzen');
+  if (pricingSection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        trackEvent('price_view', { section: 'pricing' });
+        observer.disconnect();
+      });
+    }, { threshold: 0.35 });
+
+    observer.observe(pricingSection);
+  }
+}
+
+loadGoogleAnalytics();
 setRevealDelays();
 setupReveals();
 setupMobileMenu();
@@ -911,6 +1012,7 @@ setupHeroParallax();
 setupProcessSteps();
 setupFloatingWhatsapp();
 setupMagneticDetails();
+setupTrackingEvents();
 
 requestAnimationFrame(() => {
   document.documentElement.classList.add('is-loaded');
