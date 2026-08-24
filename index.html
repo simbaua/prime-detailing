@@ -403,7 +403,31 @@
     </div>
     <p data-i18n="footerLine">Auto-interieurreiniging • Interieur detailing • Zwolle</p>
     <p>© <span id="year"></span> PRIME Detailing</p>
+    <button class="footer-cookie-link" id="cookieSettingsFooter" type="button" data-i18n="cookieFooterLink">Cookie instellingen</button>
   </footer>
+
+  <section class="cookie-banner" id="cookieBanner" role="dialog" aria-labelledby="cookieTitle" aria-describedby="cookieText" hidden>
+    <div class="cookie-copy">
+      <p class="eyebrow" data-i18n="cookieEyebrow">COOKIES</p>
+      <h2 id="cookieTitle" data-i18n="cookieTitle">Cookie voorkeuren</h2>
+      <p id="cookieText" data-i18n="cookieText">We gebruiken analytics cookies om bezoeken te begrijpen en de website te verbeteren. Je kunt analytics accepteren of weigeren.</p>
+      <div class="cookie-preferences" id="cookiePreferences" hidden>
+        <label class="cookie-toggle">
+          <input id="cookieAnalyticsToggle" type="checkbox" />
+          <span>
+            <strong data-i18n="cookieAnalyticsTitle">Analytics cookies</strong>
+            <em data-i18n="cookieAnalyticsText">Helpt ons te zien hoe de website wordt gebruikt.</em>
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="cookie-actions">
+      <button class="cookie-settings-button" id="cookieSettingsButton" type="button" data-i18n="cookieSettings">Instellingen</button>
+      <button class="button button-ghost" id="cookieRejectButton" type="button" data-i18n="cookieReject">Weigeren</button>
+      <button class="button cookie-save-button" id="cookieSaveButton" type="button" data-i18n="cookieSave" hidden>Voorkeur opslaan</button>
+      <button class="button" id="cookieAcceptButton" type="button" data-i18n="cookieAccept">Analytics accepteren</button>
+    </div>
+  </section>
 
   <a class="floating-whatsapp wa-link" href="https://wa.me/31625105116?text=Hoi%20PRIME%2C%20ik%20wil%20graag%20een%20prijsindicatie%20voor%20mijn%20auto-interieur.%20Ik%20stuur%20foto%27s%20en%20mijn%20locatie%20mee." target="_blank" rel="noopener" aria-label="Boek via WhatsApp" data-track-placement="floating" data-i18n-aria="heroCta">WhatsApp</a>
   <script src="script.js"></script>

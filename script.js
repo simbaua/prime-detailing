@@ -9,6 +9,7 @@ const languageOptions = {
 
 const DEFAULT_LANGUAGE = 'nl';
 const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
+const CONSENT_STORAGE_KEY = 'prime-detailing-cookie-consent';
 const GA_MEASUREMENT_ID = "G-OY96HZLQE2";
 
 const translations = {
@@ -103,7 +104,17 @@ const translations = {
     ctaEyebrow: 'KLAAR VOOR EEN FRIS INTERIEUR?',
     ctaTitle: "Stuur foto's van je auto.<br><span>Wij adviseren het juiste pakket.</span>",
     ctaText: "Stuur interieurfoto's en je locatie. We reageren met een passend pakket en een prijsindicatie.",
-    footerLine: 'Auto-interieurreiniging • Interieur detailing • Zwolle'
+    footerLine: 'Auto-interieurreiniging • Interieur detailing • Zwolle',
+    cookieFooterLink: 'Cookie instellingen',
+    cookieEyebrow: 'COOKIES',
+    cookieTitle: 'Cookie voorkeuren',
+    cookieText: 'We gebruiken analytics cookies om bezoeken te begrijpen en de website te verbeteren. Je kunt analytics accepteren of weigeren.',
+    cookieAnalyticsTitle: 'Analytics cookies',
+    cookieAnalyticsText: 'Helpt ons te zien hoe de website wordt gebruikt.',
+    cookieSettings: 'Instellingen',
+    cookieReject: 'Weigeren',
+    cookieSave: 'Voorkeur opslaan',
+    cookieAccept: 'Analytics accepteren'
   },
   en: {
     brandHome: 'PRIME Detailing home',
@@ -196,7 +207,17 @@ const translations = {
     ctaEyebrow: 'READY FOR A FRESH INTERIOR?',
     ctaTitle: 'Send photos of your car.<br><span>We advise the right package.</span>',
     ctaText: 'Send interior photos and your location. We reply with the right package and a price estimate.',
-    footerLine: 'Car interior cleaning • Interior detailing • Zwolle'
+    footerLine: 'Car interior cleaning • Interior detailing • Zwolle',
+    cookieFooterLink: 'Cookie settings',
+    cookieEyebrow: 'COOKIES',
+    cookieTitle: 'Cookie preferences',
+    cookieText: 'We use analytics cookies to understand visits and improve the website. You can accept or reject analytics.',
+    cookieAnalyticsTitle: 'Analytics cookies',
+    cookieAnalyticsText: 'Helps us see how the website is used.',
+    cookieSettings: 'Settings',
+    cookieReject: 'Reject',
+    cookieSave: 'Save preference',
+    cookieAccept: 'Accept analytics'
   },
   ru: {
     brandHome: 'PRIME Detailing главная',
@@ -289,7 +310,17 @@ const translations = {
     ctaEyebrow: 'ГОТОВЫ К СВЕЖЕМУ САЛОНУ?',
     ctaTitle: 'Отправьте фото авто.<br><span>Мы подберем пакет.</span>',
     ctaText: 'Отправьте фото салона и вашу локацию. Мы ответим с подходящим пакетом и ориентиром по цене.',
-    footerLine: 'Чистка салона автомобиля • Детейлинг интерьера • Zwolle'
+    footerLine: 'Чистка салона автомобиля • Детейлинг интерьера • Zwolle',
+    cookieFooterLink: 'Настройки cookies',
+    cookieEyebrow: 'COOKIES',
+    cookieTitle: 'Настройки cookies',
+    cookieText: 'Мы используем аналитические cookies, чтобы понимать посещения и улучшать сайт. Вы можете принять или отклонить аналитику.',
+    cookieAnalyticsTitle: 'Аналитические cookies',
+    cookieAnalyticsText: 'Помогают видеть, как используется сайт.',
+    cookieSettings: 'Настройки',
+    cookieReject: 'Отклонить',
+    cookieSave: 'Сохранить',
+    cookieAccept: 'Принять аналитику'
   },
   uk: {
     brandHome: 'PRIME Detailing головна',
@@ -382,7 +413,17 @@ const translations = {
     ctaEyebrow: 'ГОТОВІ ДО СВІЖОГО САЛОНУ?',
     ctaTitle: 'Надішліть фото авто.<br><span>Ми підберемо пакет.</span>',
     ctaText: 'Надішліть фото салону та вашу локацію. Ми відповімо з відповідним пакетом і орієнтовною ціною.',
-    footerLine: 'Очищення салону автомобіля • Детейлінг салону • Zwolle'
+    footerLine: 'Очищення салону автомобіля • Детейлінг салону • Zwolle',
+    cookieFooterLink: 'Налаштування cookies',
+    cookieEyebrow: 'COOKIES',
+    cookieTitle: 'Налаштування cookies',
+    cookieText: 'Ми використовуємо аналітичні cookies, щоб розуміти відвідування та покращувати сайт. Ви можете прийняти або відхилити аналітику.',
+    cookieAnalyticsTitle: 'Аналітичні cookies',
+    cookieAnalyticsText: 'Допомагають бачити, як використовується сайт.',
+    cookieSettings: 'Налаштування',
+    cookieReject: 'Відхилити',
+    cookieSave: 'Зберегти',
+    cookieAccept: 'Прийняти аналітику'
   }
 };
 
@@ -438,6 +479,14 @@ const langOptions = Array.from(document.querySelectorAll('.lang-option'));
 const mobileMenuToggle = document.getElementById('mobileMenuToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+const cookieBanner = document.getElementById('cookieBanner');
+const cookieSettingsFooter = document.getElementById('cookieSettingsFooter');
+const cookieSettingsButton = document.getElementById('cookieSettingsButton');
+const cookieAcceptButton = document.getElementById('cookieAcceptButton');
+const cookieRejectButton = document.getElementById('cookieRejectButton');
+const cookieSaveButton = document.getElementById('cookieSaveButton');
+const cookiePreferences = document.getElementById('cookiePreferences');
+const cookieAnalyticsToggle = document.getElementById('cookieAnalyticsToggle');
 const metaDescription = document.querySelector('meta[name="description"]');
 const ogDescription = document.querySelector('meta[property="og:description"]');
 const ogTitle = document.querySelector('meta[property="og:title"]');
@@ -456,23 +505,76 @@ const splitTextKeys = new Set([
   'faqTitle',
   'ctaTitle'
 ]);
+const deniedGoogleConsent = {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied'
+};
 
 function updateMotionPreference() {
   document.documentElement.classList.toggle('reduce-motion', reduceMotionQuery.matches);
 }
 
-function loadGoogleAnalytics() {
-  if (!GA_MEASUREMENT_ID) return;
-
+function ensureGoogleTag() {
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function gtag() {
     window.dataLayer.push(arguments);
   };
+}
 
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
-  document.head.appendChild(script);
+function getStoredCookieConsent() {
+  try {
+    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
+    return stored === 'accepted' || stored === 'rejected' ? stored : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function storeCookieConsent(choice) {
+  try {
+    localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+  } catch (error) {
+    // Storage can be unavailable in private or restricted browser contexts.
+  }
+}
+
+function getGoogleConsentState(choice) {
+  return {
+    ...deniedGoogleConsent,
+    analytics_storage: choice === 'accepted' ? 'granted' : 'denied'
+  };
+}
+
+function setDefaultGoogleConsent() {
+  ensureGoogleTag();
+  window.gtag('consent', 'default', {
+    ...deniedGoogleConsent,
+    wait_for_update: 500
+  });
+}
+
+function updateGoogleConsent(choice) {
+  ensureGoogleTag();
+  window.gtag('consent', 'update', getGoogleConsentState(choice));
+}
+
+function loadGoogleAnalytics() {
+  if (!GA_MEASUREMENT_ID) return;
+
+  ensureGoogleTag();
+  setDefaultGoogleConsent();
+
+  const storedConsent = getStoredCookieConsent();
+  if (storedConsent) updateGoogleConsent(storedConsent);
+
+  if (!document.querySelector(`script[src*="googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}"]`)) {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+    document.head.appendChild(script);
+  }
 
   window.gtag('js', new Date());
   window.gtag('config', GA_MEASUREMENT_ID);
@@ -698,10 +800,62 @@ function setupLanguageSelector() {
   });
 }
 
+function setCookiePreferencesOpen(isOpen) {
+  if (!cookiePreferences || !cookieSettingsButton || !cookieSaveButton) return;
+
+  cookiePreferences.hidden = !isOpen;
+  cookieSettingsButton.hidden = isOpen;
+  cookieSaveButton.hidden = !isOpen;
+}
+
+function openCookieBanner({ preferences = false } = {}) {
+  if (!cookieBanner) return;
+
+  const storedConsent = getStoredCookieConsent();
+  if (cookieAnalyticsToggle) cookieAnalyticsToggle.checked = storedConsent === 'accepted';
+
+  setCookiePreferencesOpen(preferences);
+  cookieBanner.hidden = false;
+  document.body.classList.add('cookie-banner-visible');
+}
+
+function closeCookieBanner() {
+  if (!cookieBanner) return;
+
+  cookieBanner.hidden = true;
+  document.body.classList.remove('cookie-banner-visible');
+}
+
+function saveCookieChoice(choice) {
+  const normalizedChoice = choice === 'accepted' ? 'accepted' : 'rejected';
+  storeCookieConsent(normalizedChoice);
+  updateGoogleConsent(normalizedChoice);
+  closeCookieBanner();
+}
+
+function setupCookieConsent() {
+  if (!cookieBanner) return;
+
+  if (!getStoredCookieConsent()) openCookieBanner();
+
+  cookieAcceptButton?.addEventListener('click', () => saveCookieChoice('accepted'));
+  cookieRejectButton?.addEventListener('click', () => saveCookieChoice('rejected'));
+  cookieSettingsButton?.addEventListener('click', () => {
+    if (cookieAnalyticsToggle) cookieAnalyticsToggle.checked = getStoredCookieConsent() === 'accepted';
+    setCookiePreferencesOpen(true);
+  });
+  cookieSaveButton?.addEventListener('click', () => {
+    saveCookieChoice(cookieAnalyticsToggle?.checked ? 'accepted' : 'rejected');
+  });
+  cookieSettingsFooter?.addEventListener('click', () => openCookieBanner({ preferences: true }));
+}
+
 document.getElementById('year').textContent = new Date().getFullYear();
 updateMotionPreference();
 setupLanguageSelector();
 applyLanguage(getStoredLanguage());
+loadGoogleAnalytics();
+setupCookieConsent();
 
 if (reduceMotionQuery.addEventListener) {
   reduceMotionQuery.addEventListener('change', updateMotionPreference);
@@ -1002,7 +1156,6 @@ function setupTrackingEvents() {
   }
 }
 
-loadGoogleAnalytics();
 setRevealDelays();
 setupReveals();
 setupMobileMenu();
