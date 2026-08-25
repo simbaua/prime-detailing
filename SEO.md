@@ -140,8 +140,27 @@ Production sitemap:
 Current sitemap URLs:
 
 - `https://prime-detail.nl/`
+- `https://prime-detail.nl/auto-interieur-reinigen-zwolle/`
+- `https://prime-detail.nl/mobiele-auto-detailing-zwolle/`
+- `https://prime-detail.nl/autostoelen-reinigen-zwolle/`
+- `https://prime-detail.nl/hondenhaar-verwijderen-auto/`
+- `https://prime-detail.nl/auto-bekleding-reinigen-zwolle/`
 
 Do not include localhost, Netlify preview URLs, fake language URLs, fragments, or section anchors.
+
+## Dutch Service Pages
+
+Dedicated Dutch service pages added for local SEO:
+
+| URL | Primary intent | Canonical |
+| --- | --- | --- |
+| `/auto-interieur-reinigen-zwolle/` | Auto interieur reinigen in Zwolle | `https://prime-detail.nl/auto-interieur-reinigen-zwolle/` |
+| `/mobiele-auto-detailing-zwolle/` | Mobiele auto detailing in Zwolle | `https://prime-detail.nl/mobiele-auto-detailing-zwolle/` |
+| `/autostoelen-reinigen-zwolle/` | Autostoelen reinigen in Zwolle | `https://prime-detail.nl/autostoelen-reinigen-zwolle/` |
+| `/hondenhaar-verwijderen-auto/` | Hondenhaar verwijderen uit auto | `https://prime-detail.nl/hondenhaar-verwijderen-auto/` |
+| `/auto-bekleding-reinigen-zwolle/` | Auto bekleding reinigen in Zwolle | `https://prime-detail.nl/auto-bekleding-reinigen-zwolle/` |
+
+Each service page is Dutch-only for now, uses a unique title, meta description, canonical URL, Open Graph/Twitter metadata, visible FAQ content and JSON-LD based on visible/verified business data. Future crawlable translations should use real routes such as `/en/`, `/ru/` and `/uk/` only after translated service pages exist.
 
 ## Language Architecture
 

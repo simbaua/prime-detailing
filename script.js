@@ -50,6 +50,13 @@ const translations = {
     servicesEyebrow: 'DIENSTEN',
     servicesTitle: 'Auto-interieur reinigen met een pakket dat past.',
     servicesText: 'Heldere behandelingen voor mobiele interieur detailing, bekleding reinigen en dieptereiniging op locatie.',
+    serviceLinksEyebrow: 'MEER OVER ONZE DIENSTEN',
+    serviceLinksTitle: 'Populaire diensten in Zwolle.',
+    serviceLinkInterior: 'Auto interieur reinigen Zwolle',
+    serviceLinkMobile: 'Mobiele auto detailing Zwolle',
+    serviceLinkSeats: 'Autostoelen reinigen Zwolle',
+    serviceLinkPetHair: 'Hondenhaar verwijderen uit auto',
+    serviceLinkUpholstery: 'Auto bekleding reinigen Zwolle',
     refreshDesc: 'Basis auto-interieur refresh: stofzuigen, matten, kunststof, dashboard, panelen en ramen.',
     interiorDesc: 'Alles uit PRIME Refresh, plus diepere reiniging van stoelen en tapijt met een extractor waar dat past.',
     deepDesc: 'Volledige auto-interieurreiniging: stoelen, vloer, matten, kofferbak, kunststof en moeilijk bereikbare plekken.',
@@ -153,6 +160,13 @@ const translations = {
     servicesEyebrow: 'SERVICES',
     servicesTitle: 'Car interior cleaning with the package that fits.',
     servicesText: 'Clear treatments for mobile interior detailing, upholstery cleaning and deep cleaning on location.',
+    serviceLinksEyebrow: 'MORE ABOUT OUR SERVICES',
+    serviceLinksTitle: 'Popular services in Zwolle.',
+    serviceLinkInterior: 'Car interior cleaning Zwolle',
+    serviceLinkMobile: 'Mobile car detailing Zwolle',
+    serviceLinkSeats: 'Car seat cleaning Zwolle',
+    serviceLinkPetHair: 'Dog hair removal from cars',
+    serviceLinkUpholstery: 'Car upholstery cleaning Zwolle',
     refreshDesc: 'Basic car interior refresh: vacuuming, mats, plastics, dashboard, panels and windows.',
     interiorDesc: 'Everything in PRIME Refresh, plus deeper cleaning of seats and carpet with an extractor where suitable.',
     deepDesc: 'Full car interior cleaning: seats, floor, mats, trunk, plastics and hard-to-reach areas.',
@@ -256,6 +270,13 @@ const translations = {
     servicesEyebrow: 'УСЛУГИ',
     servicesTitle: 'Чистка салона под ваши задачи.',
     servicesText: 'Понятные пакеты для выездного детейлинга интерьера, чистки обивки и глубокой чистки салона.',
+    serviceLinksEyebrow: 'ПОДРОБНЕЕ ОБ УСЛУГАХ',
+    serviceLinksTitle: 'Популярные услуги в Zwolle.',
+    serviceLinkInterior: 'Чистка салона авто Zwolle',
+    serviceLinkMobile: 'Выездной детейлинг авто Zwolle',
+    serviceLinkSeats: 'Чистка сидений авто Zwolle',
+    serviceLinkPetHair: 'Удаление шерсти из салона авто',
+    serviceLinkUpholstery: 'Чистка обивки авто Zwolle',
     refreshDesc: 'Базовое освежение салона: пылесос, коврики, пластик, панель, дверные карты и стекла.',
     interiorDesc: 'Все из PRIME Refresh, плюс более глубокая чистка сидений и коврового покрытия с экстрактором, где это уместно.',
     deepDesc: 'Полная глубокая чистка салона: сиденья, пол, коврики, багажник, пластик и труднодоступные зоны.',
@@ -359,6 +380,13 @@ const translations = {
     servicesEyebrow: 'ПОСЛУГИ',
     servicesTitle: 'Очищення салону під ваші потреби.',
     servicesText: 'Зрозумілі пакети для виїзного детейлінгу салону, очищення оббивки та глибокого очищення.',
+    serviceLinksEyebrow: 'ДЕТАЛЬНІШЕ ПРО ПОСЛУГИ',
+    serviceLinksTitle: 'Популярні послуги в Zwolle.',
+    serviceLinkInterior: 'Очищення салону авто Zwolle',
+    serviceLinkMobile: 'Виїзний детейлінг авто Zwolle',
+    serviceLinkSeats: 'Очищення сидінь авто Zwolle',
+    serviceLinkPetHair: 'Видалення шерсті з салону авто',
+    serviceLinkUpholstery: 'Очищення оббивки авто Zwolle',
     refreshDesc: 'Базове оновлення салону: пилосос, килимки, пластик, панель, дверні карти та скло.',
     interiorDesc: 'Усе з PRIME Refresh, плюс глибше очищення сидінь і килимового покриття екстрактором, де це доречно.',
     deepDesc: 'Повне глибоке очищення салону: сидіння, підлога, килимки, багажник, пластик і важкодоступні місця.',
@@ -470,6 +498,7 @@ const metadata = {
 
 const WA_BASE = 'https://wa.me/31625105116';
 let language = DEFAULT_LANGUAGE;
+const isStaticServicePage = document.body.classList.contains('service-page');
 const langSelector = document.getElementById('langSelector');
 const langButton = document.getElementById('langButton');
 const langButtonCode = document.getElementById('langButtonCode');
@@ -980,7 +1009,8 @@ function setupCookieConsent() {
 document.getElementById('year').textContent = new Date().getFullYear();
 updateMotionPreference();
 setupLanguageSelector();
-applyLanguage(getStoredLanguage());
+if (!isStaticServicePage) applyLanguage(getStoredLanguage());
+else document.documentElement.dataset.language = languageOptions[DEFAULT_LANGUAGE].code.toLowerCase();
 applyStoredAnalyticsConsent();
 setupPrimeGaDebug();
 setupCookieConsent();
