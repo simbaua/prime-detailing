@@ -494,6 +494,7 @@ const twitterTitle = document.querySelector('meta[name="twitter:title"]');
 const twitterDescription = document.querySelector('meta[name="twitter:description"]');
 const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 let analyticsConsentChoice = null;
+const gaDebugHistory = [];
 const splitTextKeys = new Set([
   'heroTitle',
   'servicesTitle',
@@ -520,9 +521,22 @@ function isDebugMode() {
   return params.has('gtm_debug') || params.get('debug_ga') === '1';
 }
 
+function isConsentResetMode() {
+  return new URLSearchParams(window.location.search).get('reset_consent') === '1';
+}
+
 function debugAnalytics(message, data) {
   if (!isDebugMode()) return;
   console.info(`[PRIME GA] ${message}`, data || '');
+}
+
+function recordAnalyticsDebug(entry) {
+  if (!isDebugMode()) return;
+  gaDebugHistory.push({
+    at: new Date().toISOString(),
+    ...entry
+  });
+  if (gaDebugHistory.length > 25) gaDebugHistory.shift();
 }
 
 function getStoredCookieConsent() {
@@ -542,6 +556,14 @@ function storeCookieConsent(choice) {
   }
 }
 
+function clearCookieConsent() {
+  try {
+    localStorage.removeItem(CONSENT_STORAGE_KEY);
+  } catch (error) {
+    // Storage can be unavailable in private or restricted browser contexts.
+  }
+}
+
 function getGoogleConsentState(choice) {
   return {
     ...deniedGoogleConsent,
@@ -553,6 +575,11 @@ function updateGoogleConsent(choice) {
   if (typeof window.gtag !== 'function') return;
 
   window.gtag('consent', 'update', getGoogleConsentState(choice));
+  recordAnalyticsDebug({
+    type: 'consent_update',
+    choice,
+    consent: getGoogleConsentState(choice)
+  });
   debugAnalytics(`consent ${choice}`, getGoogleConsentState(choice));
 }
 
@@ -565,7 +592,14 @@ function getEventParams(params = {}) {
 }
 
 function sendPageView() {
-  if (typeof window.gtag !== 'function' || !hasAnalyticsConsent()) return;
+  if (typeof window.gtag !== 'function' || !hasAnalyticsConsent()) {
+    recordAnalyticsDebug({
+      type: 'blocked',
+      event: 'page_view',
+      reason: typeof window.gtag !== 'function' ? 'gtag_unavailable' : 'consent_not_accepted'
+    });
+    return;
+  }
 
   const params = getEventParams({
     page_title: document.title,
@@ -573,10 +607,17 @@ function sendPageView() {
     page_path: window.location.pathname
   });
   window.gtag('event', 'page_view', params);
+  recordAnalyticsDebug({
+    type: 'sent',
+    event: 'page_view',
+    params
+  });
   debugAnalytics('page_view sent', params);
 }
 
 function applyStoredAnalyticsConsent() {
+  if (isConsentResetMode()) clearCookieConsent();
+
   const storedConsent = getStoredCookieConsent();
   analyticsConsentChoice = storedConsent;
 
@@ -590,12 +631,78 @@ function applyStoredAnalyticsConsent() {
 }
 
 function trackEvent(name, params = {}) {
-  if (typeof window.gtag !== 'function') return;
-  if (!hasAnalyticsConsent()) return;
+  if (typeof window.gtag !== 'function') {
+    recordAnalyticsDebug({
+      type: 'blocked',
+      event: name,
+      reason: 'gtag_unavailable',
+      params
+    });
+    return;
+  }
+  if (!hasAnalyticsConsent()) {
+    recordAnalyticsDebug({
+      type: 'blocked',
+      event: name,
+      reason: 'consent_not_accepted',
+      params
+    });
+    return;
+  }
 
   const eventParams = getEventParams(params);
   window.gtag('event', name, eventParams);
+  recordAnalyticsDebug({
+    type: 'sent',
+    event: name,
+    params: eventParams
+  });
   debugAnalytics(`event sent: ${name}`, eventParams);
+}
+
+function getPrimeGaDiagnostics() {
+  return {
+    gaId: 'G-OY96HZLQE2',
+    gtagAvailable: typeof window.gtag === 'function',
+    consentValue: analyticsConsentChoice,
+    localStorageConsent: getStoredCookieConsent(),
+    gaScriptCount: document.querySelectorAll('script[src*="googletagmanager.com/gtag/js?id=G-OY96HZLQE2"]').length,
+    lastEvents: [...gaDebugHistory],
+    page: {
+      title: document.title,
+      url: window.location.href,
+      path: window.location.pathname
+    }
+  };
+}
+
+function setupPrimeGaDebug() {
+  if (!isDebugMode()) return;
+
+  window.__primeGaDebug = {
+    getState: getPrimeGaDiagnostics,
+    sendTestEvent() {
+      if (!hasAnalyticsConsent()) {
+        recordAnalyticsDebug({
+          type: 'blocked',
+          event: 'ga_debug_test',
+          reason: 'consent_not_accepted'
+        });
+        return {
+          sent: false,
+          reason: 'consent_not_accepted',
+          state: getPrimeGaDiagnostics()
+        };
+      }
+
+      trackEvent('ga_debug_test', { source: 'manual_debug' });
+      return {
+        sent: true,
+        state: getPrimeGaDiagnostics()
+      };
+    }
+  };
+  debugAnalytics('debug object ready', window.__primeGaDebug.getState());
 }
 
 function getTrackingPlacement(el) {
@@ -875,6 +982,7 @@ updateMotionPreference();
 setupLanguageSelector();
 applyLanguage(getStoredLanguage());
 applyStoredAnalyticsConsent();
+setupPrimeGaDebug();
 setupCookieConsent();
 
 if (reduceMotionQuery.addEventListener) {
