@@ -10,6 +10,7 @@ const languageOptions = {
 const DEFAULT_LANGUAGE = 'nl';
 const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
 const CONSENT_STORAGE_KEY = 'prime-detailing-cookie-consent';
+const GA_MEASUREMENT_ID = 'G-OY96HZLQE2';
 
 const translations = {
   nl: {
@@ -524,6 +525,9 @@ const twitterDescription = document.querySelector('meta[name="twitter:descriptio
 const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 let analyticsConsentChoice = null;
 const gaDebugHistory = [];
+let lastEventAttempted = null;
+let lastEventSent = null;
+let lastBlockedReason = null;
 const splitTextKeys = new Set([
   'heroTitle',
   'servicesTitle',
@@ -616,17 +620,45 @@ function hasAnalyticsConsent() {
   return analyticsConsentChoice === 'accepted';
 }
 
-function getEventParams(params = {}) {
-  return isDebugMode() ? { ...params, debug_mode: true } : params;
+function getEventParams(params = {}, options = {}) {
+  const eventParams = {
+    send_to: GA_MEASUREMENT_ID,
+    ...params
+  };
+  if (options.transportType) eventParams.transport_type = options.transportType;
+
+  return isDebugMode() ? { ...eventParams, debug_mode: true } : eventParams;
+}
+
+function isValidGaEventName(name) {
+  return typeof name === 'string' && /^[A-Za-z][A-Za-z0-9_]{0,39}$/.test(name);
+}
+
+function markAnalyticsBlocked(event, reason, params = {}) {
+  lastEventAttempted = {
+    at: new Date().toISOString(),
+    event,
+    params
+  };
+  lastBlockedReason = reason;
+  recordAnalyticsDebug({
+    type: 'blocked',
+    event,
+    reason,
+    params
+  });
 }
 
 function sendPageView() {
+  if (!GA_MEASUREMENT_ID) {
+    markAnalyticsBlocked('page_view', 'missing_ga_id');
+    return;
+  }
   if (typeof window.gtag !== 'function' || !hasAnalyticsConsent()) {
-    recordAnalyticsDebug({
-      type: 'blocked',
-      event: 'page_view',
-      reason: typeof window.gtag !== 'function' ? 'gtag_unavailable' : 'consent_not_accepted'
-    });
+    markAnalyticsBlocked(
+      'page_view',
+      typeof window.gtag !== 'function' ? 'gtag_unavailable' : 'consent_not_accepted'
+    );
     return;
   }
 
@@ -636,6 +668,13 @@ function sendPageView() {
     page_path: window.location.pathname
   });
   window.gtag('event', 'page_view', params);
+  lastEventAttempted = {
+    at: new Date().toISOString(),
+    event: 'page_view',
+    params
+  };
+  lastEventSent = lastEventAttempted;
+  lastBlockedReason = null;
   recordAnalyticsDebug({
     type: 'sent',
     event: 'page_view',
@@ -659,43 +698,58 @@ function applyStoredAnalyticsConsent() {
   if (storedConsent === 'rejected') updateGoogleConsent('rejected');
 }
 
-function trackEvent(name, params = {}) {
+function trackEvent(name, params = {}, options = {}) {
+  if (!GA_MEASUREMENT_ID) {
+    markAnalyticsBlocked(name, 'missing_ga_id', params);
+    return false;
+  }
   if (typeof window.gtag !== 'function') {
-    recordAnalyticsDebug({
-      type: 'blocked',
-      event: name,
-      reason: 'gtag_unavailable',
-      params
-    });
-    return;
+    markAnalyticsBlocked(name, 'gtag_unavailable', params);
+    return false;
   }
   if (!hasAnalyticsConsent()) {
-    recordAnalyticsDebug({
-      type: 'blocked',
-      event: name,
-      reason: 'consent_not_accepted',
-      params
-    });
-    return;
+    markAnalyticsBlocked(name, 'consent_not_accepted', params);
+    return false;
+  }
+  if (!isValidGaEventName(name)) {
+    markAnalyticsBlocked(name, 'invalid_event_name', params);
+    return false;
   }
 
-  const eventParams = getEventParams(params);
+  const eventParams = getEventParams(params, options);
+  if (typeof options.eventCallback === 'function') {
+    eventParams.event_callback = options.eventCallback;
+    eventParams.event_timeout = options.eventTimeout || 450;
+  }
+
+  lastEventAttempted = {
+    at: new Date().toISOString(),
+    event: name,
+    params: eventParams
+  };
   window.gtag('event', name, eventParams);
+  lastEventSent = lastEventAttempted;
+  lastBlockedReason = null;
   recordAnalyticsDebug({
     type: 'sent',
     event: name,
     params: eventParams
   });
   debugAnalytics(`event sent: ${name}`, eventParams);
+  return true;
 }
 
 function getPrimeGaDiagnostics() {
   return {
-    gaId: 'G-OY96HZLQE2',
+    gaId: GA_MEASUREMENT_ID,
     gtagAvailable: typeof window.gtag === 'function',
     consentValue: analyticsConsentChoice,
     localStorageConsent: getStoredCookieConsent(),
-    gaScriptCount: document.querySelectorAll('script[src*="googletagmanager.com/gtag/js?id=G-OY96HZLQE2"]').length,
+    debugMode: isDebugMode(),
+    gaScriptCount: document.querySelectorAll(`script[src*="googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"]`).length,
+    lastEventAttempted,
+    lastEventSent,
+    lastBlockedReason,
     lastEvents: [...gaDebugHistory],
     page: {
       title: document.title,
@@ -724,11 +778,25 @@ function setupPrimeGaDebug() {
         };
       }
 
-      trackEvent('ga_debug_test', { source: 'manual_debug' });
+      trackEvent('ga_debug_test', {
+        source: 'manual_debug',
+        timestamp: Date.now()
+      });
       return {
         sent: true,
         state: getPrimeGaDiagnostics()
       };
+    },
+    sendPageView() {
+      sendPageView();
+      return getPrimeGaDiagnostics();
+    },
+    resetConsent() {
+      clearCookieConsent();
+      analyticsConsentChoice = null;
+      updateGoogleConsent('rejected');
+      openCookieBanner({ preferences: true });
+      return getPrimeGaDiagnostics();
     }
   };
   debugAnalytics('debug object ready', window.__primeGaDebug.getState());
@@ -1262,32 +1330,123 @@ function setupMagneticDetails() {
   });
 }
 
+function shouldInterceptTrackedNavigation(event, link) {
+  if (event.defaultPrevented || event.button !== 0) return false;
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
+  if (!link.href || typeof window.gtag !== 'function' || !hasAnalyticsConsent()) return false;
+  return true;
+}
+
+function openTrackedDestination(link) {
+  const target = link.getAttribute('target');
+  if (target === '_blank') {
+    window.open(link.href, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  window.location.href = link.href;
+}
+
+function trackLinkAndNavigate(event, link, events) {
+  if (!shouldInterceptTrackedNavigation(event, link)) {
+    events.forEach(({ name, params }) => trackEvent(name, params));
+    return;
+  }
+
+  event.preventDefault();
+
+  if (link.getAttribute('target') === '_blank') {
+    const openedWindow = window.open('', '_blank');
+    if (openedWindow) openedWindow.opener = null;
+
+    let didNavigate = false;
+    const continueNavigation = () => {
+      if (didNavigate) return;
+      didNavigate = true;
+      if (openedWindow) {
+        openedWindow.location.href = link.href;
+        return;
+      }
+      openTrackedDestination(link);
+    };
+    const fallbackTimer = window.setTimeout(continueNavigation, 650);
+    const eventCallback = () => {
+      window.clearTimeout(fallbackTimer);
+      continueNavigation();
+    };
+
+    events.forEach(({ name, params }, index) => {
+      trackEvent(
+        name,
+        params,
+        index === events.length - 1
+          ? { eventCallback, eventTimeout: 650 }
+          : {}
+      );
+    });
+    return;
+  }
+
+  let didNavigate = false;
+  const continueNavigation = () => {
+    if (didNavigate) return;
+    didNavigate = true;
+    openTrackedDestination(link);
+  };
+  const fallbackTimer = window.setTimeout(continueNavigation, 450);
+  const eventCallback = () => {
+    window.clearTimeout(fallbackTimer);
+    continueNavigation();
+  };
+
+  events.forEach(({ name, params }, index) => {
+    trackEvent(
+      name,
+      params,
+      index === events.length - 1
+        ? { eventCallback, eventTimeout: 450, transportType: 'beacon' }
+        : { transportType: 'beacon' }
+    );
+  });
+}
+
 function setupTrackingEvents() {
   document.querySelectorAll('.wa-link').forEach((link) => {
-    link.addEventListener('click', () => {
+    link.addEventListener('click', (event) => {
       const params = { placement: getTrackingPlacement(link) };
       if (link.dataset.package) params.package = link.dataset.package;
 
-      trackEvent('whatsapp_click', params);
-      if (link.dataset.package) trackEvent('package_select', params);
+      const events = [{ name: 'whatsapp_click', params }];
+      if (link.dataset.package) events.push({ name: 'package_select', params });
+
+      trackLinkAndNavigate(event, link, events);
     });
   });
 
   document.querySelectorAll('a[href*="instagram.com"]').forEach((link) => {
-    link.addEventListener('click', () => {
-      trackEvent('instagram_click', { placement: getTrackingPlacement(link) });
+    link.addEventListener('click', (event) => {
+      trackLinkAndNavigate(event, link, [{
+        name: 'instagram_click',
+        params: { placement: getTrackingPlacement(link) }
+      }]);
     });
   });
 
   document.querySelectorAll('a[href^="tel:"]').forEach((link) => {
-    link.addEventListener('click', () => {
-      trackEvent('phone_click', { placement: getTrackingPlacement(link) });
+    link.addEventListener('click', (event) => {
+      trackLinkAndNavigate(event, link, [{
+        name: 'phone_click',
+        params: { placement: getTrackingPlacement(link) }
+      }]);
     });
   });
 
   document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
-    link.addEventListener('click', () => {
-      trackEvent('email_click', { placement: getTrackingPlacement(link) });
+    link.addEventListener('click', (event) => {
+      trackLinkAndNavigate(event, link, [{
+        name: 'email_click',
+        params: { placement: getTrackingPlacement(link) }
+      }]);
     });
   });
 
