@@ -195,14 +195,14 @@ Configuration value:
 `GA_MEASUREMENT_ID`
 
 Current value:
-`G-OY96HZLQE2`
+`G-4HHXRWYFRB`
 
 If GA4 ever needs to be disabled temporarily, set the value back to an empty string.
 
 Current implementation:
 
 ```js
-const GA_MEASUREMENT_ID = "G-OY96HZLQE2";
+const GA_MEASUREMENT_ID = "G-4HHXRWYFRB";
 ```
 
 The site does not load Google Analytics while the ID is empty.

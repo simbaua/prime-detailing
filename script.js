@@ -12,7 +12,7 @@ const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
 const CONSENT_STORAGE_KEY = 'prime-detailing-cookie-consent';
 const ADS_ATTRIBUTION_STORAGE_KEY = 'prime_ads_attribution';
 const ADS_ATTRIBUTION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const GA_MEASUREMENT_ID = 'G-OY96HZLQE2';
+const GA_MEASUREMENT_ID = 'G-4HHXRWYFRB';
 const GOOGLE_ADS_CONFIG = {
   conversionId: '',
   whatsappConversionLabel: '',

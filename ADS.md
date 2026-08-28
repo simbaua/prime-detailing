@@ -3,7 +3,7 @@
 ## Current Setup
 
 - Production domain: `https://prime-detail.nl`
-- GA4 Measurement ID: `G-OY96HZLQE2`
+- GA4 Measurement ID: `G-4HHXRWYFRB`
 - Primary conversion: `whatsapp_click`
 - Secondary conversions: `phone_click`, `email_click`, `instagram_click`, `package_select`, `price_view`
 - Google Consent Mode v2 is enabled with privacy-safe defaults.
