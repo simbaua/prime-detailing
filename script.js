@@ -10,7 +10,26 @@ const languageOptions = {
 const DEFAULT_LANGUAGE = 'nl';
 const LANGUAGE_STORAGE_KEY = 'prime-detailing-language';
 const CONSENT_STORAGE_KEY = 'prime-detailing-cookie-consent';
+const ADS_ATTRIBUTION_STORAGE_KEY = 'prime_ads_attribution';
+const ADS_ATTRIBUTION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const GA_MEASUREMENT_ID = 'G-OY96HZLQE2';
+const GOOGLE_ADS_CONFIG = {
+  conversionId: '',
+  whatsappConversionLabel: '',
+  phoneConversionLabel: '',
+  emailConversionLabel: '',
+  enabled: false
+};
+const ATTRIBUTION_PARAM_NAMES = [
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'utm_term',
+  'gclid',
+  'gbraid',
+  'wbraid'
+];
 
 const translations = {
   nl: {
@@ -498,6 +517,13 @@ const metadata = {
 };
 
 const WA_BASE = 'https://wa.me/31625105116';
+const serviceWhatsappMessages = {
+  '/auto-interieur-reinigen-zwolle/': "Hallo PRIME, ik wil graag mijn auto-interieur laten reinigen. Ik kan foto's van het interieur en mijn locatie sturen.",
+  '/hondenhaar-verwijderen-auto/': "Hallo PRIME, ik wil hondenhaar uit mijn auto laten verwijderen. Ik kan foto's en mijn locatie sturen.",
+  '/mobiele-auto-detailing-zwolle/': "Hallo PRIME, ik wil graag mobiele auto detailing in Zwolle boeken. Ik kan foto's van mijn auto-interieur en mijn locatie sturen.",
+  '/autostoelen-reinigen-zwolle/': "Hallo PRIME, ik wil graag mijn autostoelen laten reinigen. Ik kan foto's van de stoelen, vlekken en mijn locatie sturen.",
+  '/auto-bekleding-reinigen-zwolle/': "Hallo PRIME, ik wil graag mijn auto bekleding laten reinigen. Ik kan foto's van de bekleding, tapijt, matten en mijn locatie sturen."
+};
 let language = DEFAULT_LANGUAGE;
 const isStaticServicePage = document.body.classList.contains('service-page');
 const langSelector = document.getElementById('langSelector');
@@ -572,29 +598,155 @@ function recordAnalyticsDebug(entry) {
   if (gaDebugHistory.length > 25) gaDebugHistory.shift();
 }
 
-function getStoredCookieConsent() {
+function getSafeStorageItem(key) {
   try {
-    const stored = localStorage.getItem(CONSENT_STORAGE_KEY);
-    return stored === 'accepted' || stored === 'rejected' ? stored : null;
+    return localStorage.getItem(key);
   } catch (error) {
     return null;
   }
 }
 
-function storeCookieConsent(choice) {
+function setSafeStorageItem(key, value) {
   try {
-    localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+    localStorage.setItem(key, value);
   } catch (error) {
     // Storage can be unavailable in private or restricted browser contexts.
   }
 }
 
-function clearCookieConsent() {
+function removeSafeStorageItem(key) {
   try {
-    localStorage.removeItem(CONSENT_STORAGE_KEY);
+    localStorage.removeItem(key);
   } catch (error) {
     // Storage can be unavailable in private or restricted browser contexts.
   }
+}
+
+function trimGaParamValue(value, maxLength = 100) {
+  return String(value || '').trim().slice(0, maxLength);
+}
+
+function parseStoredAttribution() {
+  const stored = getSafeStorageItem(ADS_ATTRIBUTION_STORAGE_KEY);
+  if (!stored) return null;
+
+  try {
+    const attribution = JSON.parse(stored);
+    if (!attribution || Number(attribution.expiresAt) <= Date.now()) {
+      removeSafeStorageItem(ADS_ATTRIBUTION_STORAGE_KEY);
+      return null;
+    }
+    return attribution;
+  } catch (error) {
+    removeSafeStorageItem(ADS_ATTRIBUTION_STORAGE_KEY);
+    return null;
+  }
+}
+
+function getCurrentCampaignParams() {
+  const searchParams = new URLSearchParams(window.location.search);
+  return ATTRIBUTION_PARAM_NAMES.reduce((params, name) => {
+    const value = trimGaParamValue(searchParams.get(name), 120);
+    if (value) params[name] = value;
+    return params;
+  }, {});
+}
+
+function hasCampaignParams(params) {
+  return ATTRIBUTION_PARAM_NAMES.some((name) => Boolean(params[name]));
+}
+
+function captureAdsAttribution() {
+  const campaignParams = getCurrentCampaignParams();
+  const hasNewAttribution = hasCampaignParams(campaignParams);
+  if (!hasNewAttribution) {
+    parseStoredAttribution();
+    return;
+  }
+
+  const now = Date.now();
+  const attribution = {
+    version: 1,
+    landingPage: window.location.pathname || '/',
+    landingTimestamp: new Date(now).toISOString(),
+    fullUrl: window.location.href,
+    referrer: document.referrer || '',
+    expiresAt: now + ADS_ATTRIBUTION_TTL_MS,
+    utm: {
+      source: campaignParams.utm_source || '',
+      medium: campaignParams.utm_medium || '',
+      campaign: campaignParams.utm_campaign || '',
+      content: campaignParams.utm_content || '',
+      term: campaignParams.utm_term || ''
+    },
+    clickIds: {
+      gclid: campaignParams.gclid || '',
+      gbraid: campaignParams.gbraid || '',
+      wbraid: campaignParams.wbraid || ''
+    }
+  };
+
+  setSafeStorageItem(ADS_ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution));
+  recordAnalyticsDebug({
+    type: 'attribution_captured',
+    landingPage: attribution.landingPage,
+    utm: attribution.utm,
+    clickIdFlags: {
+      has_gclid: Boolean(attribution.clickIds.gclid),
+      has_gbraid: Boolean(attribution.clickIds.gbraid),
+      has_wbraid: Boolean(attribution.clickIds.wbraid)
+    }
+  });
+}
+
+function getServicePageSlug() {
+  if (!isStaticServicePage) return '';
+  return window.location.pathname.replace(/^\/|\/$/g, '') || 'service-page';
+}
+
+function getBaseEventContext() {
+  const context = {
+    page_path: window.location.pathname || '/',
+    language: languageOptions[language]?.code || 'NL'
+  };
+  const servicePage = getServicePageSlug();
+  if (servicePage) context.service_page = trimGaParamValue(servicePage);
+  return context;
+}
+
+function getAttributionEventParams() {
+  const attribution = parseStoredAttribution();
+  const utm = attribution?.utm || {};
+  const clickIds = attribution?.clickIds || {};
+  const hasUtm = Boolean(utm.source || utm.medium || utm.campaign || utm.content || utm.term);
+  const params = {
+    has_utm: hasUtm ? 'true' : 'false',
+    has_gclid: clickIds.gclid ? 'true' : 'false',
+    has_gbraid: clickIds.gbraid ? 'true' : 'false',
+    has_wbraid: clickIds.wbraid ? 'true' : 'false'
+  };
+
+  if (attribution?.landingPage) params.landing_page = trimGaParamValue(attribution.landingPage);
+  if (utm.source) params.landing_source = trimGaParamValue(utm.source);
+  if (utm.medium) params.landing_medium = trimGaParamValue(utm.medium);
+  if (utm.campaign) params.landing_campaign = trimGaParamValue(utm.campaign);
+  if (utm.content) params.landing_content = trimGaParamValue(utm.content);
+  if (utm.term) params.landing_term = trimGaParamValue(utm.term);
+
+  return params;
+}
+
+function getStoredCookieConsent() {
+  const stored = getSafeStorageItem(CONSENT_STORAGE_KEY);
+  return stored === 'accepted' || stored === 'rejected' ? stored : null;
+}
+
+function storeCookieConsent(choice) {
+  setSafeStorageItem(CONSENT_STORAGE_KEY, choice);
+}
+
+function clearCookieConsent() {
+  removeSafeStorageItem(CONSENT_STORAGE_KEY);
 }
 
 function getGoogleConsentState(choice) {
@@ -623,6 +775,8 @@ function hasAnalyticsConsent() {
 function getEventParams(params = {}, options = {}) {
   const eventParams = {
     send_to: GA_MEASUREMENT_ID,
+    ...getBaseEventContext(),
+    ...getAttributionEventParams(),
     ...params
   };
   if (options.transportType) eventParams.transport_type = options.transportType;
@@ -739,9 +893,64 @@ function trackEvent(name, params = {}, options = {}) {
   return true;
 }
 
+function getGoogleAdsConversionLabel(type) {
+  if (type === 'whatsapp_lead') return GOOGLE_ADS_CONFIG.whatsappConversionLabel;
+  if (type === 'phone_lead') return GOOGLE_ADS_CONFIG.phoneConversionLabel;
+  if (type === 'email_lead') return GOOGLE_ADS_CONFIG.emailConversionLabel;
+  return '';
+}
+
+function trackGoogleAdsConversion(type, params = {}) {
+  const conversionLabel = getGoogleAdsConversionLabel(type);
+  if (!GOOGLE_ADS_CONFIG.enabled || !GOOGLE_ADS_CONFIG.conversionId || !conversionLabel) {
+    recordAnalyticsDebug({
+      type: 'ads_conversion_skipped',
+      conversionType: type,
+      reason: 'google_ads_not_configured'
+    });
+    return false;
+  }
+  if (typeof window.gtag !== 'function' || !hasAnalyticsConsent()) {
+    recordAnalyticsDebug({
+      type: 'ads_conversion_blocked',
+      conversionType: type,
+      reason: typeof window.gtag !== 'function' ? 'gtag_unavailable' : 'consent_not_accepted'
+    });
+    return false;
+  }
+
+  const conversionParams = {
+    send_to: `${GOOGLE_ADS_CONFIG.conversionId}/${conversionLabel}`,
+    ...getBaseEventContext(),
+    ...getAttributionEventParams(),
+    ...params
+  };
+
+  window.gtag('event', 'conversion', isDebugMode() ? { ...conversionParams, debug_mode: true } : conversionParams);
+  recordAnalyticsDebug({
+    type: 'ads_conversion_sent',
+    conversionType: type,
+    params: conversionParams
+  });
+  return true;
+}
+
 function getPrimeGaDiagnostics() {
   return {
     gaId: GA_MEASUREMENT_ID,
+    googleAds: {
+      enabled: GOOGLE_ADS_CONFIG.enabled,
+      configured: Boolean(
+        GOOGLE_ADS_CONFIG.enabled &&
+        GOOGLE_ADS_CONFIG.conversionId &&
+        (
+          GOOGLE_ADS_CONFIG.whatsappConversionLabel ||
+          GOOGLE_ADS_CONFIG.phoneConversionLabel ||
+          GOOGLE_ADS_CONFIG.emailConversionLabel
+        )
+      )
+    },
+    attribution: parseStoredAttribution(),
     gtagAvailable: typeof window.gtag === 'function',
     consentValue: analyticsConsentChoice,
     localStorageConsent: getStoredCookieConsent(),
@@ -845,6 +1054,25 @@ function storeLanguage(lang) {
   } catch (error) {
     // Storage can be unavailable in private or restricted browser contexts.
   }
+}
+
+function getNormalizedServicePath() {
+  return `/${window.location.pathname.replace(/^\/|\/$/g, '')}/`;
+}
+
+function buildWhatsappHref(message) {
+  return `${WA_BASE}?text=${encodeURIComponent(message)}`;
+}
+
+function applyServiceWhatsappMessage() {
+  if (!isStaticServicePage) return;
+
+  const message = serviceWhatsappMessages[getNormalizedServicePath()];
+  if (!message) return;
+
+  document.querySelectorAll('.wa-link').forEach((link) => {
+    link.href = buildWhatsappHref(message);
+  });
 }
 
 function updateLanguageSelector() {
@@ -1079,6 +1307,8 @@ updateMotionPreference();
 setupLanguageSelector();
 if (!isStaticServicePage) applyLanguage(getStoredLanguage());
 else document.documentElement.dataset.language = languageOptions[DEFAULT_LANGUAGE].code.toLowerCase();
+applyServiceWhatsappMessage();
+captureAdsAttribution();
 applyStoredAnalyticsConsent();
 setupPrimeGaDebug();
 setupCookieConsent();
@@ -1349,7 +1579,10 @@ function openTrackedDestination(link) {
 
 function trackLinkAndNavigate(event, link, events) {
   if (!shouldInterceptTrackedNavigation(event, link)) {
-    events.forEach(({ name, params }) => trackEvent(name, params));
+    events.forEach(({ name, params, adsConversionType }) => {
+      const sent = trackEvent(name, params);
+      if (sent && adsConversionType) trackGoogleAdsConversion(adsConversionType, params);
+    });
     return;
   }
 
@@ -1375,14 +1608,15 @@ function trackLinkAndNavigate(event, link, events) {
       continueNavigation();
     };
 
-    events.forEach(({ name, params }, index) => {
-      trackEvent(
+    events.forEach(({ name, params, adsConversionType }, index) => {
+      const sent = trackEvent(
         name,
         params,
         index === events.length - 1
           ? { eventCallback, eventTimeout: 650 }
           : {}
       );
+      if (sent && adsConversionType) trackGoogleAdsConversion(adsConversionType, params);
     });
     return;
   }
@@ -1399,14 +1633,15 @@ function trackLinkAndNavigate(event, link, events) {
     continueNavigation();
   };
 
-  events.forEach(({ name, params }, index) => {
-    trackEvent(
+  events.forEach(({ name, params, adsConversionType }, index) => {
+    const sent = trackEvent(
       name,
       params,
       index === events.length - 1
         ? { eventCallback, eventTimeout: 450, transportType: 'beacon' }
         : { transportType: 'beacon' }
     );
+    if (sent && adsConversionType) trackGoogleAdsConversion(adsConversionType, params);
   });
 }
 
@@ -1416,7 +1651,7 @@ function setupTrackingEvents() {
       const params = { placement: getTrackingPlacement(link) };
       if (link.dataset.package) params.package = link.dataset.package;
 
-      const events = [{ name: 'whatsapp_click', params }];
+      const events = [{ name: 'whatsapp_click', params, adsConversionType: 'whatsapp_lead' }];
       if (link.dataset.package) events.push({ name: 'package_select', params });
 
       trackLinkAndNavigate(event, link, events);
@@ -1436,7 +1671,8 @@ function setupTrackingEvents() {
     link.addEventListener('click', (event) => {
       trackLinkAndNavigate(event, link, [{
         name: 'phone_click',
-        params: { placement: getTrackingPlacement(link) }
+        params: { placement: getTrackingPlacement(link) },
+        adsConversionType: 'phone_lead'
       }]);
     });
   });
@@ -1445,7 +1681,8 @@ function setupTrackingEvents() {
     link.addEventListener('click', (event) => {
       trackLinkAndNavigate(event, link, [{
         name: 'email_click',
-        params: { placement: getTrackingPlacement(link) }
+        params: { placement: getTrackingPlacement(link) },
+        adsConversionType: 'email_lead'
       }]);
     });
   });
