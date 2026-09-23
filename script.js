@@ -131,6 +131,7 @@ const translations = {
     ctaTitle: "Stuur foto's van je auto.<br><span>Wij adviseren het juiste pakket.</span>",
     ctaText: "Stuur interieurfoto's en je locatie. We reageren met een passend pakket en een prijsindicatie.",
     footerLine: 'Auto-interieurreiniging • Interieur detailing • Zwolle',
+    footerAttributionPrefix: 'Website gemaakt door',
     cookieFooterLink: 'Cookie instellingen',
     cookieEyebrow: 'COOKIES',
     cookieTitle: 'Cookie voorkeuren',
@@ -241,6 +242,7 @@ const translations = {
     ctaTitle: 'Send photos of your car.<br><span>We advise the right package.</span>',
     ctaText: 'Send interior photos and your location. We reply with the right package and a price estimate.',
     footerLine: 'Car interior cleaning • Interior detailing • Zwolle',
+    footerAttributionPrefix: 'Website by',
     cookieFooterLink: 'Cookie settings',
     cookieEyebrow: 'COOKIES',
     cookieTitle: 'Cookie preferences',
@@ -351,6 +353,7 @@ const translations = {
     ctaTitle: 'Отправьте фото авто.<br><span>Мы подберем пакет.</span>',
     ctaText: 'Отправьте фото салона и вашу локацию. Мы ответим с подходящим пакетом и ориентиром по цене.',
     footerLine: 'Чистка салона автомобиля • Детейлинг интерьера • Zwolle',
+    footerAttributionPrefix: 'Сайт создан',
     cookieFooterLink: 'Настройки cookies',
     cookieEyebrow: 'COOKIES',
     cookieTitle: 'Настройки cookies',
@@ -461,6 +464,7 @@ const translations = {
     ctaTitle: 'Надішліть фото авто.<br><span>Ми підберемо пакет.</span>',
     ctaText: 'Надішліть фото салону та вашу локацію. Ми відповімо з відповідним пакетом і орієнтовною ціною.',
     footerLine: 'Очищення салону автомобіля • Детейлінг салону • Zwolle',
+    footerAttributionPrefix: 'Сайт створено',
     cookieFooterLink: 'Налаштування cookies',
     cookieEyebrow: 'COOKIES',
     cookieTitle: 'Налаштування cookies',
@@ -1663,6 +1667,18 @@ function setupTrackingEvents() {
       trackLinkAndNavigate(event, link, [{
         name: 'instagram_click',
         params: { placement: getTrackingPlacement(link) }
+      }]);
+    });
+  });
+
+  document.querySelectorAll('.quantora-attribution-link').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      trackLinkAndNavigate(event, link, [{
+        name: 'quantora_attribution_click',
+        params: {
+          placement: 'footer',
+          destination: 'quantora'
+        }
       }]);
     });
   });
